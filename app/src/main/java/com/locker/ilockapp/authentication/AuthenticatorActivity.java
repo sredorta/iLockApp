@@ -77,7 +77,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 protected void onPostExecute(Intent intent) {
                     Logs.i("We are checking if Token is valid ! onPostExecute", AuthenticatorActivity.class);
                     if (intent.getBooleanExtra("isValidToken",false)) {
-                        setResult(RESULT_OK);
+                        setResult(RESULT_OK, intent);
                         Logs.i("Exit the activity !", this.getClass());
                         finishLogin(intent);
                     } else {

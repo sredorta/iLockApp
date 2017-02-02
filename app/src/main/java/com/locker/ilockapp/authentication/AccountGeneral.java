@@ -198,6 +198,7 @@ public class AccountGeneral {
         myUser.setType(user.getType());
         myUser.setPassword(user.getPassword());
         //We set whatever is set in the user ID
+        if (user.getName() != null) myUser.setName(user.getName());
         if (user.getEmail() != null) myUser.setEmail(user.getEmail());
         if (user.getPhone() != null) myUser.setId(user.getPhone());
         if (user.getId() != null) myUser.setId(user.getId());           //If we have Id we use it with priority

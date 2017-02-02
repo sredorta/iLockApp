@@ -75,10 +75,12 @@ public class LockerServerAuthenticate implements ServerAuthenticate {
         String user = null;
         if (myAccountGeneral.user.getId() != null)
             user = myAccountGeneral.user.getId();
-        else if (myAccountGeneral.user.getEmail() != null)
-            user = myAccountGeneral.user.getEmail();
-        else
-            user = myAccountGeneral.user.getEmail();
+        else {
+            if (myAccountGeneral.user.getName() != null)
+                user = myAccountGeneral.user.getName();
+            else
+                user = myAccountGeneral.user.getPhone();
+        }
 
 
         JsonItem item =  new CloudFetchr().userSignIn(user, myAccountGeneral.user.getPassword(),

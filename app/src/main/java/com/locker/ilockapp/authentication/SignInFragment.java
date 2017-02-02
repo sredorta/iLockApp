@@ -26,6 +26,7 @@ import static com.locker.ilockapp.authentication.AccountGeneral.sServerAuthentic
 public class SignInFragment extends Fragment {
     private AccountGeneral myAccountGeneral;
     private View mView;
+    private User myUserTmp;
     private final int REQ_SIGNUP = 1;
 
     // Constructor
@@ -145,12 +146,23 @@ public class SignInFragment extends Fragment {
             super.onActivityResult(requestCode, resultCode, data);
     }
 
+    //We need to restore the user with the same values we had in case we go to preferences...
+    @Override
+    public void onStop() {
+        super.onStop();
+        Logs.i("We are on onStop of SignInWithAccounts !");
+        myUserTmp = new User();
+        myUserTmp = myAccountGeneral.user;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         Logs.i("We are in on resume ! of SignInWithAccounts");
-        myAccountGeneral.resetUser();
+        if (myUserTmp!= null)
+           myAccountGeneral.user = myUserTmp;
     }
+
 
 }
 
