@@ -114,7 +114,12 @@ public class User extends JsonItem {
     public String getId() {return mUserId;}
 
     public void   setName(String name) { mUserName = name; }
-    public String getName() {return mUserName;}
+    public String getName() {
+      if (mUserName == null && mUserEmail != null)
+        return mUserEmail;
+      else
+       return mUserName;
+    }
 
     public void   setFirstName(String firstname) { mUserFirstName = firstname; }
     public String getFirstName() {return mUserFirstName;}
@@ -164,8 +169,20 @@ public class User extends JsonItem {
     //If there is one account matching preferences in the device, we set all data from the device account
     if (myAccountGeneral.getAccount(this) != null) {
       this.getDataFromDeviceAccount(myAccountGeneral.getAccount(this));
-    }
+    } else
+       this.setName(null);
+    this.print("Values for User after init:");
   }
+
+  //Initializes the user account details with empty user
+  public void initEmpty(Context context) {
+    myAccountGeneral = new AccountGeneral(context);
+    this.setType(AccountGeneral.ACCOUNT_TYPE);
+    this.setAuthType(AccountGeneral.AUTHTOKEN_TYPE_STANDARD);
+    this.setId(null);
+  }
+
+
 
   //Parses a JSON with the fields and returns a User object
   public static User parseJSON(String jsonString) {

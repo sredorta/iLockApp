@@ -9,7 +9,7 @@
     <ImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:id="@+id/imageView"
+        android:id="@+id/fragment_wait_imageView"
         android:layout_gravity="top|center"
         android:src="@drawable/mylogo" />
 </LinearLayout>

@@ -3,6 +3,8 @@ package com.locker.ilockapp.authentication;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.locker.ilockapp.R;
 import com.locker.ilockapp.dao.JsonItem;
@@ -20,6 +23,7 @@ import com.locker.ilockapp.dao.QueryPreferences;
 import com.locker.ilockapp.toolbox.Logs;
 import com.locker.ilockapp.toolbox.Toolbox;
 
+import static com.locker.ilockapp.authentication.AccountGeneral.ARG_IS_ADDING_NEW_ACCOUNT;
 import static com.locker.ilockapp.authentication.AccountGeneral.sServerAuthenticate;
 
 /**
@@ -29,6 +33,7 @@ public class AuthenticatorFragment extends Fragment {
     private AccountGeneral myAccountGeneral;
     private final int REQ_SIGNIN = 1;
     private final int REQ_SIGNIN_WITH_ACCOUNTS = 2;
+    private final int REQ_SIGNUP = 3;
     private Intent myIntent;
     private User user;
     // Constructor
@@ -47,10 +52,6 @@ public class AuthenticatorFragment extends Fragment {
         user.init(getContext());
         //myAccountGeneral.init(getActivity().getApplicationContext());
         myIntent = getActivity().getIntent();
-        if (myAccountGeneral.getAccount(user) != null) {
-            checkFastLogin();
-        } else
-            startSignIn();
 
     }
 
@@ -58,6 +59,42 @@ public class AuthenticatorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_wait, container, false);
+        final ImageView myLogo = (ImageView) v.findViewById(R.id.fragment_wait_imageView);
+
+        ObjectAnimator fadeInOutAnimator = ObjectAnimator.ofFloat(this, "alpha", 1, 0, 1).setDuration(2000);
+        fadeInOutAnimator.setRepeatCount(1);
+        fadeInOutAnimator.setTarget(myLogo);
+        final ObjectAnimator fadeInOutInfiniteAnimator = ObjectAnimator.ofFloat(this, "alpha", 1, 0, 1).setDuration(2000);
+        fadeInOutInfiniteAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        fadeInOutAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                fadeInOutInfiniteAnimator.start();
+                if (myIntent.hasExtra(ARG_IS_ADDING_NEW_ACCOUNT)) {
+                    startSignUp();
+                } else {
+                    if (myAccountGeneral.getAccount(user) != null) {
+                        checkFastLogin();
+                    } else
+                        startSignIn();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+            }
+        });
+        fadeInOutAnimator.start();
 
         return v;
     }
@@ -125,11 +162,24 @@ public class AuthenticatorFragment extends Fragment {
             startActivityForResult(signIn, REQ_SIGNIN);
         }
     }
+    //Start signIn acticty for result
+    private void startSignUp() {
+        Logs.i("Found IS_ADDING :", this.getClass());
+        Intent signUp = new Intent(getActivity().getBaseContext(), SignUpActivity.class);
+        //Forward any extras that were passed from LockerAuthenticator when creating account from Settings
+        if (getActivity().getIntent().getExtras() != null)
+                signUp.putExtras(myIntent.getExtras());
+        Logs.i("Intent details for intent to start SignInWithAccountsActivity:", this.getClass());
+        Toolbox.dumpIntent(signUp);
+        startActivityForResult(signUp, REQ_SIGNUP);
+    }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQ_SIGNIN && resultCode == Activity.RESULT_OK) {
+            finishLogin(data);
+        } else if (requestCode == REQ_SIGNIN_WITH_ACCOUNTS && resultCode == Activity.RESULT_OK) {
             finishLogin(data);
         } else if (requestCode == REQ_SIGNIN_WITH_ACCOUNTS && resultCode == Activity.RESULT_OK) {
             finishLogin(data);

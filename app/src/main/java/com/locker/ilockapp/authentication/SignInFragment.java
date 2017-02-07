@@ -41,7 +41,7 @@ public class SignInFragment extends Fragment {
         //Get account details from Singleton either from intent or from account of the device
         myAccountGeneral = new AccountGeneral(getContext());
         user = new User();
-        user.init(getContext());
+        user.initEmpty(getContext());
     }
 
     @Nullable

@@ -125,8 +125,8 @@ public class CloudFetchr {
             //Required to enable input stream, otherwise we get EOF (When using POST DoOutput is required
             connection.setDoInput(true);
             if (this.SEND_METHOD.equals("POST")) connection.setDoOutput(true);
-            connection.setReadTimeout(2000);
-            connection.setConnectTimeout(2000);
+            connection.setReadTimeout(4000);
+            connection.setConnectTimeout(4000);
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
             connection.setRequestMethod(this.SEND_METHOD);
             connection.connect();

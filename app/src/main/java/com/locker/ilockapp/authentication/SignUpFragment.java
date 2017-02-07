@@ -33,7 +33,7 @@ public class SignUpFragment extends Fragment {
         //Get account details from Singleton
         myAccountGeneral = new AccountGeneral(getContext());
         user = new User();
-        user.init(getContext());
+        user.initEmpty(getContext());
     }
 
     @Nullable
@@ -114,17 +114,5 @@ public class SignUpFragment extends Fragment {
         user.print("Before running sign-up:");
     }
 
-    //We need to restore the user with the same values we had in case we go to preferences...
-    @Override
-    public void onStop() {
-        super.onStop();
-        Logs.i("We are on onStop of SignInWithAccounts !");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Logs.i("We are in on resume ! of SignInWithAccounts");
-    }
 
 }
