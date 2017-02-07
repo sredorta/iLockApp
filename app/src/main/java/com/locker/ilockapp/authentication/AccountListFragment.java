@@ -38,6 +38,9 @@ public class AccountListFragment extends Fragment {
         private RecyclerView mAccountsRecycleView;
         private List<Account> mAccounts = new ArrayList<>();
         AccountGeneral myAccountGeneral;
+        User user;
+        public static User myUserSelected = new User();
+
         private final int REQ_SIGNIN = 1;
 
         // Constructor
@@ -50,9 +53,9 @@ public class AccountListFragment extends Fragment {
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            myAccountGeneral = AccountGeneral.getInstance();
-            myAccountGeneral.resetUser();
-
+            myAccountGeneral = new AccountGeneral(getContext());
+            user = new User();
+            user.init(getContext());
         }
 
 
@@ -74,9 +77,9 @@ public class AccountListFragment extends Fragment {
             }
             //Do the swap to make sure that we start with last login as first element
             Account myAccount;
-            if (myAccountGeneral.user.getName() != null)
+            if (user.getName() != null)
                 for (Account account : myAccountGeneral.getAccounts()) {
-                    if (myAccountGeneral.user.getName().equals(mAccountManager.getUserData(account, PARAM_USER_ACCOUNT_NAME))) {
+                    if (user.getName().equals(mAccountManager.getUserData(account, PARAM_USER_ACCOUNT_NAME))) {
                         int index = mAccounts.indexOf(account);
                         if (index != 0) {
                             myAccount = mAccounts.get(0);
@@ -93,32 +96,6 @@ public class AccountListFragment extends Fragment {
         }
 
 
-
-        @Override
-        public void onDestroy() {
-            super.onDestroy();
-        }
-
-        @Override
-        public void onStop() {
-            super.onStop();
-            Logs.i("onStop");
-
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            Logs.i("onResume");
-        }
-
-
-
-        @Override
-        public void onPause() {
-            super.onPause();
-            Logs.i("onPause");
-        }
 
     private class AccountListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Account mAccount;
@@ -143,8 +120,9 @@ public class AccountListFragment extends Fragment {
         @Override
         public void onClick(View view) {
             //We need to update the user with the account data that has been selected
-            myAccountGeneral.user.getDataFromDeviceAccount(myAccountGeneral.getAccountManager(),mAccount);
+            user.getDataFromDeviceAccount(mAccount);
             mAdapter.notifyDataSetChanged();
+            myUserSelected = user;
         }
 
         private void deleteItem() {
@@ -163,8 +141,8 @@ public class AccountListFragment extends Fragment {
                     Logs.i("When starting signup no extras found !", this.getClass());
                 }
                 startActivityForResult(signin, REQ_SIGNIN);
+                //getActivity().finish();
             }
-            //holder.itemView.setVisibility(View.GONE);
         }
 
         public void bindAccount(Account account, AccountListHolder holder ) {
@@ -179,9 +157,9 @@ public class AccountListFragment extends Fragment {
             mAccountNameTextView.setText(mAccountManager.getUserData(account, PARAM_USER_EMAIL));
             mAvatarImageView.setImageResource(R.drawable.user_default);
             //Define color for active or not active account (last log-in)
-            myAccountGeneral.user.print("Before crash :");
-            if (myAccountGeneral.user.getName()!= null) {
-                if (myAccountGeneral.user.getName().equals(mAccountManager.getUserData(account, PARAM_USER_ACCOUNT_NAME))) {
+            user.print("Before crash :");
+            if (user.getName()!= null) {
+                if (user.getName().equals(mAccountManager.getUserData(account, PARAM_USER_ACCOUNT_NAME))) {
                     itemView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
                     buttonViewOption.setEnabled(true);
                 } else {
@@ -209,7 +187,7 @@ public class AccountListFragment extends Fragment {
                                     //handle menu1 click
                                     break;
                                 case R.id.options_menu_account_item_remove:
-                                    myAccountGeneral.removeAccount();
+                                    myAccountGeneral.removeAccount(user);
                                     deleteItem();
                                     break;
                             }

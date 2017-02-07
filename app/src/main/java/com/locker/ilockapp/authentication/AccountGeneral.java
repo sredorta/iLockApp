@@ -49,59 +49,24 @@ public class AccountGeneral {
 
     Context mContext;
     AccountManager mAccountManager;
-    public User user;
 
-    //Singleton definition
-    private static AccountGeneral Instance = new AccountGeneral();
 
-    private AccountGeneral() {}
-    public static AccountGeneral getInstance() {
-        return Instance;
-    }
-
-    //Initialize the singleton
-    public void init(Context context) {
+    public AccountGeneral(Context context) {
         mContext = context;
         mAccountManager = AccountManager.get(context);
-        user = new User();
-
-        user.setType(ACCOUNT_TYPE);
-        user.setAuthType(AUTHTOKEN_TYPE_STANDARD);
-        user.setId(null);
-
-        //Try to restore an account from preferences
-        user.setName(QueryPreferences.getPreference(context,QueryPreferences.PREFERENCE_ACCOUNT_NAME));
-
-        //If there is one account in the device, we set all data from the device account
-        if (getAccount() != null) {
-            user.getDataFromDeviceAccount(mAccountManager, getAccount());
-        }
-
-    }
-
-    public void resetUser() {
-        User newUser = new User();
-        newUser.setType(user.getType());
-        newUser.setAuthType(user.getAuthType());
-        //Try to restore an account from preferences
-        newUser.setName(QueryPreferences.getPreference(mContext,QueryPreferences.PREFERENCE_ACCOUNT_NAME));
-
-        user = newUser;
-        user.print("After reset user :");
     }
 
 
-
+    //Returns the Account manager
     public AccountManager getAccountManager() {
         return mAccountManager;
     }
 
 
     // Gets the "current account" on the device matching our accountType and accountName
-    public Account getAccount() {
+    public Account getAccount(User user) {
         if (user.getName() == null)
             return null;
-
         //Find if there is an account with the correct accountName and get its token
         for (Account account : mAccountManager.getAccountsByType(user.getType())) {
             if (account.name.equals(user.getName())) {
@@ -113,11 +78,11 @@ public class AccountGeneral {
 
     //Returns all accounts of our type
     public Account[] getAccounts() {
-        for (Account account : mAccountManager.getAccountsByType(user.getType())) {
+        for (Account account : mAccountManager.getAccountsByType(ACCOUNT_TYPE)) {
             Logs.i("Found account : " + account.name);
         }
         //Find if there is an account with the correct accountName and get its token
-        return mAccountManager.getAccountsByType(user.getType());
+        return mAccountManager.getAccountsByType(ACCOUNT_TYPE);
 
     }
 
@@ -127,38 +92,39 @@ public class AccountGeneral {
     }
 
     // Creates an account on the Device
-    public Boolean createAccount() {
+    public Boolean createAccount(User user) {
         Account account;
-        this.user.print("Creating account with following data:");
-        if (getAccount() == null) {
+        user.print("Creating account with following data:");
+        if (getAccount(user) == null) {
             account = new Account(user.getName(), user.getType());
             mAccountManager.addAccountExplicitly(account, user.getPassword(), null);
         } else {
             Logs.i("Account existing, skip creation...");
-            account = getAccount();
+            account = getAccount(user);
         }
-        user.setDataToDeviceAccount(mAccountManager,account);
+        user.setDataToDeviceAccount(account);
         if (account == null)
             return false;
         else
             return true;
     }
 
+
     //Creates the Server and Device account and exits activity if successfull
-    public void createServerAndDeviceAccount(final Activity activity) {
+    public void createServerAndDeviceAccount(final Activity activity, final User user) {
 
         new AsyncTask<Void, Void, Intent>() {
             @Override
             protected Intent doInBackground(Void... params) {
                 Bundle data = new Bundle();
-                JsonItem item = sServerAuthenticate.userSignUp();
+                JsonItem item = sServerAuthenticate.userSignUp(user);
                 if(!item.getResult()) {
                     data.putString(KEY_ERROR_MESSAGE, item.getMessage());
                 } else {
                     Logs.i("Creating now the account on the device !", this.getClass());
-                    if (!createAccount()) {
+                    if (!createAccount(user)) {
                         //We could not create the device account so removing the server account
-                        sServerAuthenticate.userRemove();
+                        sServerAuthenticate.userRemove(user);
                         Logs.i("Removing server account as we could not create device account !", this.getClass());
                         data.putString(KEY_ERROR_MESSAGE, "Could not create device account !");
                     }
@@ -190,20 +156,8 @@ public class AccountGeneral {
     }
 
     //Submits credentials to the server and exits activity if successfull
-    public void submitCredentials(final Activity activity) {
+    public void submitCredentials(final Activity activity, final User user) {
 
-        //Update the singleton
-        User myUser = new User();
-        myUser.setAuthType(user.getAuthType());
-        myUser.setType(user.getType());
-        myUser.setPassword(user.getPassword());
-        //We set whatever is set in the user ID
-        if (user.getName() != null) myUser.setName(user.getName());
-        if (user.getEmail() != null) myUser.setEmail(user.getEmail());
-        if (user.getPhone() != null) myUser.setId(user.getPhone());
-        if (user.getId() != null) myUser.setId(user.getId());           //If we have Id we use it with priority
-        //Refresh user with the only data we have from inputs
-        user = myUser;
         user.print("User details for submit:");
 
         new AsyncTask<Void, Void, Void>() {
@@ -213,7 +167,7 @@ public class AccountGeneral {
                 Logs.i("Started authenticating", this.getClass());
                 //If we have an account we try to create a new session and get the new token sending ID + password
                 //The server function directly updates the singleton token,id fields
-                item = sServerAuthenticate.userSignIn();
+                item = sServerAuthenticate.userSignIn(user);
                 return null;
             }
 
@@ -223,13 +177,10 @@ public class AccountGeneral {
                 if (!item.getResult() || user.getToken() == null) {
                     Toast.makeText(activity.getBaseContext(), item.getMessage(), Toast.LENGTH_SHORT).show();
                 } else {
-                    // If we could sign in
-                    user.setName(user.getEmail());
-
-                    if (getAccount()==null) {
-                        createAccount();
+                    if (getAccount(user)==null) {
+                        createAccount(user);
                     }
-                    user.setDataToDeviceAccount(mAccountManager, getAccount());
+                    user.setDataToDeviceAccount(getAccount(user));
                     Bundle data = new Bundle();
                     //Settings for the Account AuthenticatorActivity
                     data.putString(AccountManager.KEY_ACCOUNT_NAME, user.getName());
@@ -246,42 +197,16 @@ public class AccountGeneral {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //Remove account on the Device
-    public Boolean removeAccount() {
-        Logs.i("Removing account name: " + user.getName());
+    public Boolean removeAccount(User user) {
+        Logs.i("Removing account name: " + user.getName(), this.getClass());
 
-        if (getAccount() == null)
+        if (getAccount(user) == null)
             return false;
-
         Boolean isDone = false;
-
         if (Build.VERSION.SDK_INT<22) {
             @SuppressWarnings("deprecation")
-            final AccountManagerFuture<Boolean> booleanAccountManagerFuture = mAccountManager.removeAccount(getAccount(), null, null);
+            final AccountManagerFuture<Boolean> booleanAccountManagerFuture = mAccountManager.removeAccount(getAccount(user), null, null);
             try {
                 isDone = booleanAccountManagerFuture.getResult(1, TimeUnit.SECONDS);
             } catch (OperationCanceledException e) {
@@ -292,7 +217,7 @@ public class AccountGeneral {
                 Logs.i("Caught exception : " + e);
             }
         } else
-            isDone = mAccountManager.removeAccountExplicitly(getAccount());
+            isDone = mAccountManager.removeAccountExplicitly(getAccount(user));
         if (isDone) {
             Logs.i("Successfully removed account ! ", AccountGeneral.class);
         }

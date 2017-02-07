@@ -26,9 +26,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".authentication.AuthenticatorActivity" />
-        <activity android:name=".authentication.SignInWithAccountsActivity" />
-        <activity android:name=".authentication.SignInActivity" />
-        <activity android:name=".authentication.SignUpActivity" />
+        <activity android:name=".authentication.SignInWithAccountsActivity" android:theme="@style/LoginTheme" android:windowSoftInputMode="adjustNothing"/>
+        <activity android:name=".authentication.SignInActivity" android:theme="@style/LoginTheme" android:windowSoftInputMode="adjustNothing"/>
+        <activity android:name=".authentication.SignUpActivity" android:theme="@style/LoginTheme" android:windowSoftInputMode="adjustNothing"/>
 
         <service android:name=".authentication.AuthenticatorService">
             <intent-filter>
@@ -40,7 +40,7 @@
                 android:resource="@xml/authenticator" />
         </service>
 
-        <activity android:name=".dao.QueryPreferences"></activity>
+        <activity android:name=".dao.QueryPreferences" android:theme="@style/LoginTheme"></activity>
     </application>
 
 </manifest>

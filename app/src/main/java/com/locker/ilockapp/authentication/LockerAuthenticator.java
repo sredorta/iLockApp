@@ -44,8 +44,8 @@ public class LockerAuthenticator extends AbstractAccountAuthenticator {
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
  /*       intent.putExtra(ARG_ACCOUNT_TYPE, accountType);
         intent.putExtra(ARG_ACCOUNT_AUTH_TYPE, authTokenType);
-        intent.putExtra(ARG_IS_ADDING_NEW_ACCOUNT, true);
         */
+        intent.putExtra(ARG_IS_ADDING_NEW_ACCOUNT, true);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
         final Bundle bundle = new Bundle();
@@ -60,8 +60,8 @@ public class LockerAuthenticator extends AbstractAccountAuthenticator {
         Logs.i("getAuthToken", this.getClass());
          // If the caller requested an authToken type we don't support, then
         // return an error
-        AccountGeneral myAccountGeneral = AccountGeneral.getInstance();
-
+        User user = new User();
+        user.init(mContext);
         if (!authTokenType.equals(AUTHTOKEN_TYPE_STANDARD) && !authTokenType.equals(AUTHTOKEN_TYPE_FULL)) {
             final Bundle result = new Bundle();
             result.putString(AccountManager.KEY_ERROR_MESSAGE, "invalid authTokenType");
@@ -83,13 +83,13 @@ public class LockerAuthenticator extends AbstractAccountAuthenticator {
             if (password != null) {
                 try {
                     Logs.i("Re-authenticating with the existing password", this.getClass());
-                    JsonItem item = sServerAuthenticate.userSignIn();
+                    JsonItem item = sServerAuthenticate.userSignIn(user);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-        authToken = myAccountGeneral.user.getToken();
+        authToken = user.getToken();
 
         // If we get an authToken - we return it
         if (!TextUtils.isEmpty(authToken)) {

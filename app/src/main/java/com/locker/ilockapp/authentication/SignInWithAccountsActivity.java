@@ -10,6 +10,7 @@ import com.locker.ilockapp.activity.SingleFragmentActivity;
  * It sends back to the Authenticator the result.
  */
 public class SignInWithAccountsActivity extends SingleFragmentActivity {
+
     @Override
     public Fragment createFragment() {
         return SignInWithAccountsFragment.newInstance();

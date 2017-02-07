@@ -19,6 +19,7 @@ import com.locker.ilockapp.toolbox.Logs;
 public class SignUpFragment extends Fragment {
     private AccountGeneral myAccountGeneral;
     private View mView;
+    private User user;
     private User myUserTmp;
     // Constructor
     public static SignUpFragment newInstance() {
@@ -30,9 +31,9 @@ public class SignUpFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         //Get account details from Singleton
-        myAccountGeneral = myAccountGeneral.getInstance();
-        myAccountGeneral.resetUser();
-        myAccountGeneral.user.print("at onCreate");
+        myAccountGeneral = new AccountGeneral(getContext());
+        user = new User();
+        user.init(getContext());
     }
 
     @Nullable
@@ -49,7 +50,7 @@ public class SignUpFragment extends Fragment {
 
                 if (checkFields()) {
                     setUserFieldsFromInputs();
-                    myAccountGeneral.createServerAndDeviceAccount(getActivity());
+                    myAccountGeneral.createServerAndDeviceAccount(getActivity(), user);
                 }
             }
         });
@@ -102,15 +103,15 @@ public class SignUpFragment extends Fragment {
         final EditText email        = (EditText) mView.findViewById(R.id.fragment_signup_EditText_email);
         final EditText password     = (EditText) mView.findViewById(R.id.fragment_signup_EditText_password);
 
-        myAccountGeneral.user.setName(email.getText().toString());
-        myAccountGeneral.user.setFirstName(firstName.getText().toString());
-        myAccountGeneral.user.setLastName(lastName.getText().toString());
-        myAccountGeneral.user.setPhone(phone.getText().toString());
-        myAccountGeneral.user.setEmail(email.getText().toString());
-        myAccountGeneral.user.setPassword(password.getText().toString());
+        user.setName(email.getText().toString());
+        user.setFirstName(firstName.getText().toString());
+        user.setLastName(lastName.getText().toString());
+        user.setPhone(phone.getText().toString());
+        user.setEmail(email.getText().toString());
+        user.setPassword(password.getText().toString());
         //TODO avatar
 
-        myAccountGeneral.user.print("Before running sign-up:");
+        user.print("Before running sign-up:");
     }
 
     //We need to restore the user with the same values we had in case we go to preferences...
@@ -118,16 +119,12 @@ public class SignUpFragment extends Fragment {
     public void onStop() {
         super.onStop();
         Logs.i("We are on onStop of SignInWithAccounts !");
-        myUserTmp = new User();
-        myUserTmp = myAccountGeneral.user;
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Logs.i("We are in on resume ! of SignInWithAccounts");
-        if (myUserTmp != null)
-            myAccountGeneral.user = myUserTmp;
     }
 
 }

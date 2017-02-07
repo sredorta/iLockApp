@@ -3,6 +3,7 @@ package com.locker.ilockapp.dao;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import com.locker.ilockapp.authentication.User;
 import com.locker.ilockapp.toolbox.Logs;
 
 /**
@@ -20,7 +21,7 @@ public class JsonItem {
         private String mResult = "false";
 
         @SerializedName("account")
-        private String mAccount = null;
+        private String mAccount;
 
 
         @SerializedName("action")
@@ -28,7 +29,6 @@ public class JsonItem {
 
 
         public String getAccountDetails() {
-            Logs.i("Account details we got from JSON :" + mAccount);
             return mAccount;
         }
 
@@ -80,7 +80,9 @@ public class JsonItem {
 
         public static JsonItem parseJSON(String response) {
             Gson gson = new GsonBuilder().create();
+            Logs.i("Before gson parse");
             JsonItem answer = gson.fromJson(response, JsonItem.class);
+            Logs.i("After gson parse");
             return(answer);
         }
 

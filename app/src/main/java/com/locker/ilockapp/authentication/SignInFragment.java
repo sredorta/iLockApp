@@ -26,6 +26,7 @@ import static com.locker.ilockapp.authentication.AccountGeneral.sServerAuthentic
 public class SignInFragment extends Fragment {
     private AccountGeneral myAccountGeneral;
     private View mView;
+    private User user;
     private User myUserTmp;
     private final int REQ_SIGNUP = 1;
 
@@ -38,8 +39,9 @@ public class SignInFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Get account details from Singleton either from intent or from account of the device
-        myAccountGeneral = AccountGeneral.getInstance();
-        myAccountGeneral.resetUser();
+        myAccountGeneral = new AccountGeneral(getContext());
+        user = new User();
+        user.init(getContext());
     }
 
     @Nullable
@@ -57,7 +59,7 @@ public class SignInFragment extends Fragment {
                 if (checkFields()) {
                     setUserFieldsFromInputs();
                     password.setText("");
-                    myAccountGeneral.submitCredentials(getActivity());
+                    myAccountGeneral.submitCredentials(getActivity(),user);
                 }
             }
         });
@@ -69,7 +71,7 @@ public class SignInFragment extends Fragment {
                 if (checkFields()) {
                     setUserFieldsFromInputs();
                     password.setText("");
-                    myAccountGeneral.submitCredentials(getActivity());
+                    myAccountGeneral.submitCredentials(getActivity(),user);
                 }
             }
         });
@@ -124,13 +126,13 @@ public class SignInFragment extends Fragment {
         final EditText email_or_phone     = (EditText) mView.findViewById(R.id.fragment_signin_EditText_account);
 
         if (myAccountGeneral.checkEmailInput(email_or_phone.getText().toString())) {
-            myAccountGeneral.user.setEmail(email_or_phone.getText().toString());
+            user.setEmail(email_or_phone.getText().toString());
         } else
-            myAccountGeneral.user.setPhone(email_or_phone.getText().toString());
+            user.setPhone(email_or_phone.getText().toString());
 
-        myAccountGeneral.user.setPassword(password.getText().toString());
+        user.setPassword(password.getText().toString());
 
-        myAccountGeneral.user.print("Before running sign-in:");
+        user.print("Before running sign-in:");
     }
 
 
@@ -151,16 +153,12 @@ public class SignInFragment extends Fragment {
     public void onStop() {
         super.onStop();
         Logs.i("We are on onStop of SignInWithAccounts !");
-        myUserTmp = new User();
-        myUserTmp = myAccountGeneral.user;
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Logs.i("We are in on resume ! of SignInWithAccounts");
-        if (myUserTmp!= null)
-           myAccountGeneral.user = myUserTmp;
     }
 
 

@@ -23,6 +23,7 @@ public class SignInWithAccountsFragment extends Fragment {
     private AccountGeneral myAccountGeneral;
     private View mView;
     private User myUserTmp;
+    private User user;
     private final int REQ_SIGNIN = 1;
     private final int REQ_SIGNUP = 2;
 
@@ -37,8 +38,9 @@ public class SignInWithAccountsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         //Get account details from Singleton either from intent or from account of the device
-        myAccountGeneral = AccountGeneral.getInstance();
-        myAccountGeneral.resetUser();
+        myAccountGeneral = new AccountGeneral(getContext());
+        user = new User();
+        user.init(getContext());
     }
 
     @Nullable
@@ -54,11 +56,13 @@ public class SignInWithAccountsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Logs.i("Submitting credentials to account manager !", this.getClass());
+                user = AccountListFragment.myUserSelected;
+                user.print("This is wat we have for user now:");
                 //If we are restoring an account then we get from user input the account name
                 if (checkFields()) {
                     setUserFieldsFromInputs();
                     password.setText("");
-                    myAccountGeneral.submitCredentials(getActivity());
+                    myAccountGeneral.submitCredentials(getActivity(),user);
                 }
 
             }
@@ -133,9 +137,9 @@ public class SignInWithAccountsFragment extends Fragment {
     //Sets the user singleton with the inputs
     private void setUserFieldsFromInputs() {
         final EditText password           = (EditText) mView.findViewById(R.id.fragment_signin_with_accounts_EditText_password);
-        myAccountGeneral.user.setPassword(password.getText().toString());
+        user.setPassword(password.getText().toString());
 
-        myAccountGeneral.user.print("Before running sign-in:");
+        user.print("Before running sign-in:");
     }
 
 
@@ -173,15 +177,11 @@ public class SignInWithAccountsFragment extends Fragment {
     public void onStop() {
         super.onStop();
         Logs.i("We are on onStop of SignInWithAccounts !");
-        myUserTmp = new User();
-        myUserTmp = myAccountGeneral.user;
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Logs.i("We are in on resume ! of SignInWithAccounts");
-        if (myUserTmp!= null)
-            myAccountGeneral.user = myUserTmp;
     }
 }
