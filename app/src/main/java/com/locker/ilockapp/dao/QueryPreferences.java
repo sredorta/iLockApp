@@ -84,7 +84,7 @@ public class QueryPreferences extends PreferenceActivity implements SharedPrefer
     public static void setDefaultValues(Context context) {
         //PreferenceManager.setDefaultValues(context, R.xml.account_prefs, false); //last argument is if we want to override user settings or not
         QueryPreferences.setPreference(context,PREFERENCE_ACCOUNT_DEBUG_SERVER,false);
-        CloudFetchr.URI_BASE = CloudFetchr.URI_BASE_DEBUG;
+        CloudFetchr.URI_BASE = CloudFetchr.URI_BASE_PROD;
         Logs.i("Set URI_BASE to :" + CloudFetchr.URI_BASE);
     }
 

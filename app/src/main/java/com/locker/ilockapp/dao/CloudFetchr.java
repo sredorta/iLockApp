@@ -141,7 +141,6 @@ public class CloudFetchr {
                 OutputStream os = connection.getOutputStream();
                 OutputStreamWriter writer = new OutputStreamWriter(os, "UTF-8");
                 String postData = getPostDataString(parametersPOST);
-                Logs.i("POST HEADER : " + postData);
 
                 writer.write(postData);
                 writer.flush();
@@ -211,35 +210,51 @@ public class CloudFetchr {
             if (first)
                 first = false;
             else
-                result.append("&");
-
-            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+                result.append(";");
+/*            result.append(URLEncoder.encode("$_POST['" + entry.getKey() +"']", "UTF-8"));
             result.append("=");
-            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));*/
+            result.append("$_POST['" + entry.getKey() +"']");
+            result.append("=");
+            result.append("\"" + entry.getValue() + "\"");
         }
-
-        return result.toString();
+        if (result.toString().length()==0) {
+            Logs.i("POST HEADER :");
+            return "";
+        } else {
+            result.append(";");
+            Logs.i("POST HEADER :" + result.toString());
+            //Encrypt the parameters
+            Encryption cipher = new Encryption();
+            String encryptedStr = new String();
+            try {
+                encryptedStr = Encryption.bytesToHex(cipher.encrypt(result.toString()));
+            } catch (Exception e) {
+                Logs.i("Caught exception: " + e);
+            }
+            String resultEncrypted = "mydata=" + encryptedStr;
+            Logs.i("POST HEADER encrypted: " + resultEncrypted, this.getClass());
+            return resultEncrypted;
+        }
     }
 
 
     // Sends PHP request and returns JSON object
     private JsonItem getJSON(URL url,HashMap<String,String> parametersPOST){
         JsonItem item = new JsonItem();
-
         //Get the input from the network
         String network;
         String jsonString;
         try {
             network = getURLString(url, parametersPOST);
         } catch (IOException ioe) {
-            network = new String();
             item.setSuccess(false);
             item.setResult(false);
             item.setMessage("ERROR: Failed to fetch input !");
             Logs.i("Falied to fetch input ! :" + ioe, this.getClass());
             return item;
         }
-        //Logs.i("Network answer: " + network);
+
         //Decrypt the input
         String netStr = new String(network);
         netStr = Encryption.hexToString(netStr);
@@ -255,9 +270,8 @@ public class CloudFetchr {
             item.setMessage("ERROR: Decrypt error !");
             return item;
         }
-        Logs.i("Decrypted JSON: " + jsonString, this.getClass());
-       // jsonString = network;
 
+        //Parse the JSON string
         try {
             JSONObject jsonBody = new JSONObject(jsonString);
             Logs.i ("Final JSON:\n" + jsonBody.toString(1)); // We want to see always this message for now
@@ -270,6 +284,8 @@ public class CloudFetchr {
         }
         return item;
     }
+
+
 
 /*******************************************************************************************/
 
@@ -372,13 +388,15 @@ public class CloudFetchr {
 
     public void debugEncryption() {
         Logs.i("DEBUG encrypt:");
-
+        this.SEND_METHOD="POST";
         new AsyncTask<Void,Void,Void>() {
             byte[] network;
             @Override
             protected Void doInBackground(Void... voids) {
 
                 HashMap<String, String> parameters = new HashMap<>();
+               // parameters.put("param1", "value1");
+               // parameters.put("param2", "value2");
                 URL url = buildUrl(PHP_USER_TEST,parameters);
                 try {
                     network = getURLBytes(url, parameters);
@@ -393,6 +411,7 @@ public class CloudFetchr {
             @Override
             protected void onPostExecute(Void aVoid) {
                 String netStr = new String(network);
+                Logs.i(netStr);
                 netStr = Encryption.hexToString(netStr);
                 Integer l = netStr.length();
                 Log.i("TEST", "Length is : " + l);

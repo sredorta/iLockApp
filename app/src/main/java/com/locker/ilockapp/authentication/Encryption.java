@@ -72,7 +72,6 @@ public class Encryption {
             cipher.init(Cipher.DECRYPT_MODE, keyspec, ivspec);
 
             decrypted = cipher.doFinal(hexToBytes(code));
-            Logs.i("decrypted length is:" + decrypted.length);
             //Remove trailing zeroes
             if( decrypted.length > 0) {
                 int trim = 0;
@@ -83,7 +82,6 @@ public class Encryption {
                     System.arraycopy(decrypted, 0, newArray, 0, decrypted.length - trim);
                     decrypted = newArray;
                 }
-                Logs.i("after trim: " + decrypted.length);
             }
         } catch (Exception e) {
             throw new Exception("[decrypt] " + e.getMessage());
@@ -114,10 +112,7 @@ public class Encryption {
 
     //Remove any non hex character from a string
     public static String hexToString(String in) {
-        int len = in.length();
-        String out = in.replaceAll("[^a-f0-9]", "");
-        len = out.length();
-        return out;
+        return in.replaceAll("[^a-f0-9]", "");
     }
 
     private static String padString(String source) {
