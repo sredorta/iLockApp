@@ -6,11 +6,16 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.widget.Toast;
 
 import com.locker.ilockapp.dao.JsonItem;
@@ -18,6 +23,8 @@ import com.locker.ilockapp.dao.QueryPreferences;
 import com.locker.ilockapp.toolbox.Logs;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -145,6 +152,7 @@ public class AccountGeneral {
 
                 if (intent.hasExtra(KEY_ERROR_MESSAGE))
                     Toast.makeText(activity.getBaseContext(), intent.getStringExtra(KEY_ERROR_MESSAGE), Toast.LENGTH_SHORT).show();
+
                 else {
                     //Save the account created in the preferences (all except critical things)
                     //Finish and send to AuthenticatorActivity that we where successfull
@@ -156,7 +164,7 @@ public class AccountGeneral {
     }
 
     //Submits credentials to the server and exits activity if successfull
-    public void submitCredentials(final Activity activity, final User user) {
+    public void submitCredentials(final Activity activity,final View v, final User user) {
 
         user.print("User details for submit:");
 
@@ -175,7 +183,7 @@ public class AccountGeneral {
             protected void onPostExecute(Void aVoid) {
                 // If result is bad or no token display the message of error from the server
                 if (!item.getResult() || user.getToken() == null) {
-                    Toast.makeText(activity.getBaseContext(), item.getMessage(), Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, item.getMessage(), Snackbar.LENGTH_LONG).show();
                 } else {
                     if (getAccount(user)==null) {
                         createAccount(user);
@@ -262,6 +270,33 @@ public class AccountGeneral {
         while (m.find()) count++;
         if (count < 2) return false;
         return true;
+    }
+    public boolean checkPasswordInput(String password, final View v, final Activity activity) {
+        boolean result = checkPasswordInput(password);
+        if (!result) {
+            Snackbar snackbar = Snackbar.make(v, "Invalid password", Snackbar.LENGTH_LONG).setAction("DETAILS", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Logs.i("clicked");
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setMessage("Must be 8 characters long minimum \n Must contain 2 uppercase\n Must contain 2 lower case\n Must contain 2 numbers")
+                            .setTitle("Password requirements:");
+                    builder.setCancelable(true);
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    builder.create();
+                    builder.show();
+                    //builder.setPositiveButton("OK")
+
+                }
+            });
+            snackbar.show();
+        }
+        return result;
     }
 
     //Check that email meets the required format

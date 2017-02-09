@@ -25,7 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".authentication.AuthenticatorActivity" />
+        <activity android:name=".authentication.AuthenticatorActivity" android:theme="@style/LoginTheme"/>
         <activity android:name=".authentication.SignInWithAccountsActivity" android:theme="@style/LoginTheme" android:windowSoftInputMode="adjustNothing"/>
         <activity android:name=".authentication.SignInActivity" android:theme="@style/LoginTheme" android:windowSoftInputMode="adjustNothing"/>
         <activity android:name=".authentication.SignUpActivity" android:theme="@style/LoginTheme" android:windowSoftInputMode="adjustNothing"/>

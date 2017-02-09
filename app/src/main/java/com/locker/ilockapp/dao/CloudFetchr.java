@@ -2,7 +2,10 @@ package com.locker.ilockapp.dao;
 
 
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.util.Log;
 
+import com.locker.ilockapp.authentication.Encryption;
 import com.locker.ilockapp.toolbox.Logs;
 
 import org.json.JSONException;
@@ -17,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +40,7 @@ public class CloudFetchr {
     private static final String PHP_USER_SIGNUP = "locker.users.signup.php";                    // Params required : user,password,email,user_table and returns token
     private static final String PHP_USER_PASSWORD = "locker.users.setpassword.php";                    // Params required : user,password,email,user_table and returns token
     private static final String PHP_USER_TOKEN = "locker.users.checktoken.php";                 // Params required : email,token and returns if token is valid or not
+    private static final String PHP_USER_TEST = "test.php";
     private String SEND_METHOD = "POST";                                                        // POST or GET method
 
     public static final String URI_BASE_DEBUG = "http://10.0.2.2/example1/api/";                //localhost controlled by prefs
@@ -135,8 +140,10 @@ public class CloudFetchr {
             if (this.SEND_METHOD.equals("POST")) {
                 OutputStream os = connection.getOutputStream();
                 OutputStreamWriter writer = new OutputStreamWriter(os, "UTF-8");
-                Logs.i("POST HEADER : " + getPostDataString(parametersPOST), this.getClass());
-                writer.write(getPostDataString(parametersPOST));
+                String postData = getPostDataString(parametersPOST);
+                Logs.i("POST HEADER : " + postData);
+
+                writer.write(postData);
                 writer.flush();
                 writer.close();
                 os.close();
@@ -170,9 +177,9 @@ public class CloudFetchr {
 
             // Response from server after login process will be stored in response variable.
             response = out.toByteArray();
+
             // You can perform UI operations here
             //Log.i(TAG, "Message from Server: \n" + response);
-
         } catch (IOException e) {
             // Error
             Logs.i("Caught exception :" + e);
@@ -218,21 +225,48 @@ public class CloudFetchr {
     // Sends PHP request and returns JSON object
     private JsonItem getJSON(URL url,HashMap<String,String> parametersPOST){
         JsonItem item = new JsonItem();
+
+        //Get the input from the network
+        String network;
+        String jsonString;
         try {
-            String jsonString = getURLString(url,parametersPOST);
-            Logs.i("Received JSON:" + jsonString);
+            network = getURLString(url, parametersPOST);
+        } catch (IOException ioe) {
+            network = new String();
+            item.setSuccess(false);
+            item.setResult(false);
+            item.setMessage("ERROR: Failed to fetch input !");
+            Logs.i("Falied to fetch input ! :" + ioe, this.getClass());
+            return item;
+        }
+        //Logs.i("Network answer: " + network);
+        //Decrypt the input
+        String netStr = new String(network);
+        netStr = Encryption.hexToString(netStr);
+        Logs.i("Encrypted JSON: " + netStr, this.getClass());
+
+        Encryption mcrypt = new Encryption();
+        try {
+            jsonString = new String(mcrypt.decrypt(netStr));
+        } catch (Exception e) {
+            Logs.i("Caught decryption exception: " + e);
+            item.setSuccess(false);
+            item.setResult(false);
+            item.setMessage("ERROR: Decrypt error !");
+            return item;
+        }
+        Logs.i("Decrypted JSON: " + jsonString, this.getClass());
+       // jsonString = network;
+
+        try {
             JSONObject jsonBody = new JSONObject(jsonString);
+            Logs.i ("Final JSON:\n" + jsonBody.toString(1)); // We want to see always this message for now
             item = JsonItem.parseJSON(jsonBody.toString());
         } catch (JSONException je) {
             Logs.i("Failed to parse JSON :" + je);
             item.setSuccess(false);
             item.setResult(false);
             item.setMessage("ERROR: Failed to parse JSON !");
-        } catch (IOException ioe) {
-            item.setSuccess(false);
-            item.setResult(false);
-            item.setMessage("ERROR: Failed to fetch JSON !");
-            Logs.i("Falied to fetch items ! :" + ioe);
         }
         return item;
     }
@@ -335,6 +369,70 @@ public class CloudFetchr {
         URL url = buildUrl(PHP_USER_TOKEN,parameters);
         return getJSON(url,parameters);
     }
+
+    public void debugEncryption() {
+        Logs.i("DEBUG encrypt:");
+
+        new AsyncTask<Void,Void,Void>() {
+            byte[] network;
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                HashMap<String, String> parameters = new HashMap<>();
+                URL url = buildUrl(PHP_USER_TEST,parameters);
+                try {
+                    network = getURLBytes(url, parameters);
+                } catch (IOException e) {
+                    Logs.i("Caught exception: " + e);
+                }
+                Logs.i("End of on background...");
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                String netStr = new String(network);
+                netStr = Encryption.hexToString(netStr);
+                Integer l = netStr.length();
+                Log.i("TEST", "Length is : " + l);
+                Log.i("TEST","Recieved from network : " + netStr);
+
+                try {
+                    Logs.i("decripting...");
+                    Encryption mcrypt = new Encryption();
+                    String decrypted = new String( mcrypt.decrypt( netStr ) );
+
+                    //String res = new String( mcrypt.decrypt(test), "UTF-8" );
+                    //res = URLDecoder.decode(res,"UTF-8");
+                    Logs.i("Decrypted result: " + decrypted);
+                } catch (Exception e) {
+                    Logs.i("Caught exception: " + e);
+                }
+
+                super.onPostExecute(aVoid);
+            }
+        }.execute();
+
+    }
+    private String myTest(byte[] myresponse) {
+      if (myresponse == null) {
+        return "";
+      } else {
+        return new String(myresponse);
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 }
 

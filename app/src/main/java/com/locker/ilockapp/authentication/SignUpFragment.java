@@ -75,7 +75,7 @@ public class SignUpFragment extends Fragment {
             lastName.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             fieldsOk = false;
         }
-        if (!myAccountGeneral.checkPasswordInput(password.getText().toString())) {
+        if (!myAccountGeneral.checkPasswordInput(password.getText().toString(),mView,getActivity())) {
             fieldsOk = false;
             password.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             password.setText("");

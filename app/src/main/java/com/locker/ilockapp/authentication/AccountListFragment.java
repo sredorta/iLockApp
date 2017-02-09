@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.locker.ilockapp.R;
 import com.locker.ilockapp.dao.QueryPreferences;
+import com.locker.ilockapp.toolbox.DividerItemDecoration;
 import com.locker.ilockapp.toolbox.Logs;
 
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class AccountListFragment extends Fragment {
             myAccountGeneral = new AccountGeneral(getContext());
             user = new User();
             user.init(getContext());
+            myUserSelected = user;
         }
 
 
@@ -65,7 +67,7 @@ public class AccountListFragment extends Fragment {
             View v = inflater.inflate(R.layout.fragment_account_list, container, false);
             mAccountsRecycleView = (RecyclerView) v.findViewById(R.id.account_list_recycle_view);
             mAccountsRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+            //mAccountsRecycleView.addItemDecoration(new DividerItemDecoration(getActivity(), 1));
             updateUI();
             return v;
         }

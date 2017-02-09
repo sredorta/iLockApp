@@ -1,6 +1,8 @@
 package com.locker.ilockapp.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -35,5 +37,17 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         transaction.addToBackStack(tag);
         transaction.commit();
     }
+
+    @Override
+    public void finish() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_left);
+        transaction.remove(fragment);
+        //transaction.replace(R.id.fragment_container, fragment);
+        //transaction..addToBackStack(tag);
+        transaction.commit();
+        super.finish();
+    }
+
 
 }

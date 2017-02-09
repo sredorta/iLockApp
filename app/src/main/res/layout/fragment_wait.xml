@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center_vertical|center_horizontal"
-    android:background="@drawable/grass_texture">
+    android:gravity="center_vertical|center_horizontal">
 
     <ImageView
         android:layout_width="50dp"

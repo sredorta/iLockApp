@@ -15,6 +15,9 @@ import com.locker.ilockapp.toolbox.Logs;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Created by sredorta on 2/1/2017.
  */
@@ -229,9 +232,14 @@ public class User extends JsonItem {
   }
 
 
+
+
+
+
   public void setDataToDeviceAccount(Account account) {
       AccountManager mAccountManager = myAccountGeneral.getAccountManager();
-      if (this.getPassword()!= null)  mAccountManager.setPassword(account, this.getPassword());
+
+      if (this.getPassword()!= null)  mAccountManager.setPassword(account, Encryption.getSHA1(this.getPassword()));
       if (this.getAuthType()!=null)   mAccountManager.setUserData(account, PARAM_USER_ACCOUNT_AUTH_TYPE, this.getAuthType());
       if (this.getToken()!= null)     mAccountManager.setAuthToken(account, this.getAuthType(), this.getToken());
       if (this.getType() != null)     mAccountManager.setUserData(account, PARAM_USER_ACCOUNT_TYPE, this.getType());

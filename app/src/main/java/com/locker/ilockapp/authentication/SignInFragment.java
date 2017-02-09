@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.locker.ilockapp.R;
+import com.locker.ilockapp.dao.CloudFetchr;
 import com.locker.ilockapp.dao.JsonItem;
 import com.locker.ilockapp.toolbox.Logs;
 
@@ -59,7 +61,7 @@ public class SignInFragment extends Fragment {
                 if (checkFields()) {
                     setUserFieldsFromInputs();
                     password.setText("");
-                    myAccountGeneral.submitCredentials(getActivity(),user);
+                    myAccountGeneral.submitCredentials(getActivity(),mView,user);
                 }
             }
         });
@@ -71,7 +73,7 @@ public class SignInFragment extends Fragment {
                 if (checkFields()) {
                     setUserFieldsFromInputs();
                     password.setText("");
-                    myAccountGeneral.submitCredentials(getActivity(),user);
+                    myAccountGeneral.submitCredentials(getActivity(),mView,user);
                 }
             }
         });
@@ -104,15 +106,16 @@ public class SignInFragment extends Fragment {
         final EditText password = (EditText) mView.findViewById(R.id.fragment_signin_EditText_password);
         final EditText email_or_phone = (EditText) mView.findViewById(R.id.fragment_signin_EditText_account);
 
-        if (!myAccountGeneral.checkPasswordInput(password.getText().toString())) {
+        if (!myAccountGeneral.checkPasswordInput(password.getText().toString(),mView,getActivity())) {
             password.setText("");
             password.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-            Toast.makeText(getActivity(), "Password must be at least 8 chars !", Toast.LENGTH_LONG).show();
             fieldsOk = false;
         }
         if (!myAccountGeneral.checkEmailOrPhoneInput(email_or_phone.getText().toString())) {
             email_or_phone.setText("");
             email_or_phone.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+            Snackbar snackbar = Snackbar.make(mView, "Invalid phone or email", Snackbar.LENGTH_LONG);
+            snackbar.show();
             fieldsOk = false;
         }
 

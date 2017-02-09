@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.locker.ilockapp.R;
 import com.locker.ilockapp.authentication.AuthenticatorActivity;
+import com.locker.ilockapp.dao.CloudFetchr;
 import com.locker.ilockapp.toolbox.Logs;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         myb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //new CloudFetchr().debugEncryption();
                 Intent i = new Intent(getApplicationContext(), AuthenticatorActivity.class);
                 startActivityForResult(i, REQ_SIGNIN);
             }
