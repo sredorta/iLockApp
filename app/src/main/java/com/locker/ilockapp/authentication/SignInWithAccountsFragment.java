@@ -23,13 +23,11 @@ public class SignInWithAccountsFragment extends FragmentAbstract {
     private View mView;
     private User user;
     private boolean mUpdatePositions = true;
-    private static final String KEY_SAVED_USER = "saved_user";                  //Input string with tarting selected account input
-    private static final String KEY_UPDATE_POSITION = "update_user_position";   //Input boolean to know if we come back from rotation
-//    private final int REQ_SIGNIN = 1;
-//    private final int REQ_SIGNUP = 2;
+    private static final String KEY_SAVED_USER = "saved_user";                  //For rotation saved USER
+    private static final String KEY_UPDATE_POSITION = "update_user_position";   //For rotation update first in recycleview?
+
     //Requests to other fragments
     private static final int REQUEST_SELECTION = 0;                             //Request to recycleview so that returns selected user
-    public static final String FRAGMENT_OUTPUT_PARAM_SELECTED_USER = "selected_user";    //Returns selected user
 
     // Constructor
     public static SignInWithAccountsFragment newInstance() {
@@ -65,8 +63,7 @@ public class SignInWithAccountsFragment extends FragmentAbstract {
         v.findViewById(R.id.fragment_signin_with_accounts_Button_connect).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Logs.i("Submitting credentials to account manager !", this.getClass());
-                user.print("This is wat we have for user now:");
+                //user.print("This is wat we have for user now:");
                 //hide input keyboard
                 hideInputKeyBoard();
 
@@ -84,10 +81,7 @@ public class SignInWithAccountsFragment extends FragmentAbstract {
         v.findViewById(R.id.fragment_signin_with_accounts_Button_credentials).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Logs.i("Starting new activity to create account !", this.getClass());
-
                 SignInFragment fragment = SignInFragment.newInstance();
-//                fragment.setTargetFragment(SignInWithAccountsFragment.this, REQ_SIGNIN);
                 //Now replace the AuthenticatorFragment with the SignInWithAccountsFragment
                 replaceFragment(fragment,"test",true);  //This comes from abstract
             }
@@ -97,9 +91,7 @@ public class SignInWithAccountsFragment extends FragmentAbstract {
         v.findViewById(R.id.fragment_signin_with_accounts_Button_create).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Logs.i("Starting new activity to create account !", this.getClass());
                 SignUpFragment fragment = SignUpFragment.newInstance();
-//                fragment.setTargetFragment(SignInWithAccountsFragment.this, REQ_SIGNUP);
                 //Now replace the AuthenticatorFragment with the SignInFragment
                 replaceFragment(fragment,"test",true);  //This comes from abstract
             }
@@ -136,7 +128,6 @@ public class SignInWithAccountsFragment extends FragmentAbstract {
         Bundle bundle = new Bundle();
         bundle.putSerializable(AccountListFragment.FRAGMENT_INPUT_PARAM_USER, user.getName());
         bundle.putSerializable(AccountListFragment.FRAGMENT_INPUT_PARAM_UPDATE_POSITIONS, mUpdatePositions);
-        Logs.i("Creating recycleView with: " + user.getName() + " and " + mUpdatePositions);
         AccountListFragment childFragment = AccountListFragment.newInstance(bundle);
         setContainer(R.id.fragment_container_account_display);
         childFragment.setTargetFragment(SignInWithAccountsFragment.this, REQUEST_SELECTION);
@@ -172,4 +163,13 @@ public class SignInWithAccountsFragment extends FragmentAbstract {
         outState.putBoolean(KEY_UPDATE_POSITION,false);
     }
 
+    @Override
+    public void onResume() {
+        //If there are no accounts left then we start the app without login
+        if (myAccountGeneral.getAccountsCount() == 0) {
+            mActivity.setResult(Activity.RESULT_CANCELED);
+            mActivity.finish();
+        }
+        super.onResume();
+    }
 }

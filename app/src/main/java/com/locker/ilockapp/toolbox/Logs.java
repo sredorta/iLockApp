@@ -2,7 +2,7 @@ package com.locker.ilockapp.toolbox;
 
 import android.util.Log;
 
-import com.locker.ilockapp.activity.MainActivity;
+import com.locker.ilockapp.activity.WaitLogInActivity;
 import com.locker.ilockapp.authentication.AccountGeneral;
 import com.locker.ilockapp.authentication.AuthenticatorActivity;
 import com.locker.ilockapp.authentication.LockerAuthenticator;
@@ -39,7 +39,7 @@ public class Logs {
         ///////////////////////////////////////////////////////////////////////////////////
         //  Start of Table
         ///////////////////////////////////////////////////////////////////////////////////
-        settings.put(MainActivity.class,                    true );
+        settings.put(WaitLogInActivity.class,                    true );
         settings.put(LockerAuthenticator.class,             true );
         settings.put(CloudFetchr.class,                     true );
         settings.put(JsonItem.class,                        true );

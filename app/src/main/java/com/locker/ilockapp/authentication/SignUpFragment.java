@@ -112,14 +112,12 @@ public class SignUpFragment extends FragmentAbstract {
         user.setPassword(password.getText().toString());
         //TODO avatar
 
-        user.print("Before running sign-up:");
     }
-
+/*
     @Override
     public void onBackPressed() {
         Log.i("SERGI", "OnBackPressed was done, and we are now sending RESULT_CANCELED");
         sendResult(Activity.RESULT_CANCELED);
-        //removeFragment(this, true);
     }
-
+*/
 }

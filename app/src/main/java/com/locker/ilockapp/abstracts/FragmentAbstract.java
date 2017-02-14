@@ -152,7 +152,7 @@ public abstract class FragmentAbstract extends Fragment implements OnBackPressed
             for (String key : keys) {
                 Object o = getArguments().getSerializable(key);
                 putInputParam(key, o);
-                Logs.i("Got input argument : " + key + " : " + o.toString());
+                if (o != null) Logs.i("Got input argument : " + key + " : " + o.toString());
             }
         }
     }

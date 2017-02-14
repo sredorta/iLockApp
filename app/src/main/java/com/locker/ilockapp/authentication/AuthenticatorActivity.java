@@ -1,6 +1,7 @@
 package com.locker.ilockapp.authentication;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -62,7 +63,11 @@ public class AuthenticatorActivity extends AppCompatActivity implements OnBackPr
              }
              mAccountAuthenticatorResponse = null;
         }
-     super.finish();
+        //We return to the main activity the response
+        Intent i = new Intent();
+        i.putExtras(mResultBundle);
+        this.setResult(RESULT_OK, i);
+        super.finish();
      }
 
 

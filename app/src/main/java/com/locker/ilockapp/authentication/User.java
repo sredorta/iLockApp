@@ -165,18 +165,19 @@ public class User extends JsonItem {
     this.setType(AccountGeneral.ACCOUNT_TYPE);
     this.setAuthType(AccountGeneral.AUTHTOKEN_TYPE_STANDARD);
     this.setId(null);
-//    mContext = context;
-    //Try to restore an account from preferences
-    this.setName(QueryPreferences.getPreference(context,QueryPreferences.PREFERENCE_ACCOUNT_NAME));
-    Logs.i("Now the current account is: " + this.getName());
-    //If there is one account matching preferences in the device, we set all data from the device account
-    if (myAccountGeneral.getAccount(this) != null) {
-      this.getDataFromDeviceAccount(myAccountGeneral.getAccount(this));
-    } else {
-      //The account might have been removed so we pick the first account we find
-      this.getDataFromDeviceAccount(myAccountGeneral.getAccount());
-    }
 
+    if (myAccountGeneral.getAccountsCount()>0) {
+      //Try to restore an account from preferences
+      this.setName(QueryPreferences.getPreference(context, QueryPreferences.PREFERENCE_ACCOUNT_NAME));
+      Logs.i("Now the current account is: " + this.getName());
+      //If there is one account matching preferences in the device, we set all data from the device account
+      if (myAccountGeneral.getAccount(this) != null) {
+        this.getDataFromDeviceAccount(myAccountGeneral.getAccount(this));
+      } else {
+        //The account might have been removed so we pick the first account we find
+        this.getDataFromDeviceAccount(myAccountGeneral.getAccount());
+      }
+    }
     Logs.i("Now the current account is: " + this.getName());
   }
 

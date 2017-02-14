@@ -112,5 +112,6 @@ public class SignInFragment extends FragmentAbstract {
         user.setPassword(password.getText().toString());
     }
 
+
 }
 

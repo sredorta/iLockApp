@@ -170,7 +170,6 @@ public class AuthenticatorFragment extends FragmentAbstract {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Logs.i("We are here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         if (resultCode == Activity.RESULT_CANCELED) {
             Logs.i("AuthenticatorFragment, result is CANCELED");
             mActivity.setResult(Activity.RESULT_CANCELED);
