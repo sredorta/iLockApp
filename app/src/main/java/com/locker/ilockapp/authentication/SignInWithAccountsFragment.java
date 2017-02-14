@@ -1,33 +1,35 @@
 package com.locker.ilockapp.authentication;
 
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.locker.ilockapp.R;
-import com.locker.ilockapp.dao.CloudFetchr;
+import com.locker.ilockapp.abstracts.FragmentAbstract;
 import com.locker.ilockapp.toolbox.Logs;
 
 /**
  * Created by sredorta on 1/31/2017.
  */
-public class SignInWithAccountsFragment extends Fragment {
+public class SignInWithAccountsFragment extends FragmentAbstract {
     private AccountGeneral myAccountGeneral;
     private View mView;
-    private User myUserTmp;
     private User user;
-    private final int REQ_SIGNIN = 1;
-    private final int REQ_SIGNUP = 2;
+    private boolean mUpdatePositions = true;
+    private static final String KEY_SAVED_USER = "saved_user";                  //Input string with tarting selected account input
+    private static final String KEY_UPDATE_POSITION = "update_user_position";   //Input boolean to know if we come back from rotation
+//    private final int REQ_SIGNIN = 1;
+//    private final int REQ_SIGNUP = 2;
+    //Requests to other fragments
+    private static final int REQUEST_SELECTION = 0;                             //Request to recycleview so that returns selected user
+    public static final String FRAGMENT_OUTPUT_PARAM_SELECTED_USER = "selected_user";    //Returns selected user
 
     // Constructor
     public static SignInWithAccountsFragment newInstance() {
@@ -43,6 +45,12 @@ public class SignInWithAccountsFragment extends Fragment {
         myAccountGeneral = new AccountGeneral(getContext());
         user = new User();
         user.init(getContext());
+        //If we had an user on the bundle it means that screen was rotated, so we restore
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getString(KEY_SAVED_USER)!= null)
+                user.setName(savedInstanceState.getString(KEY_SAVED_USER));
+            mUpdatePositions = savedInstanceState.getBoolean(KEY_UPDATE_POSITION,true);
+        }
     }
 
     @Nullable
@@ -58,13 +66,16 @@ public class SignInWithAccountsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Logs.i("Submitting credentials to account manager !", this.getClass());
-                user = AccountListFragment.myUserSelected;
                 user.print("This is wat we have for user now:");
+                //hide input keyboard
+                hideInputKeyBoard();
+
                 //If we are restoring an account then we get from user input the account name
                 if (checkFields()) {
                     setUserFieldsFromInputs();
                     password.setText("");
-                    myAccountGeneral.submitCredentials(getActivity(),mView,user);
+                    user.print("User data :");
+                    myAccountGeneral.submitCredentials(mActivity,mView,user);
                 }
             }
         });
@@ -74,26 +85,11 @@ public class SignInWithAccountsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Logs.i("Starting new activity to create account !", this.getClass());
-                // Since there can only be one AuthenticatorActivity, we call the sign up activity, get his results,
-                // and return them in setAccountAuthenticatorResult(). See finishLogin().
-                Intent signin = new Intent(getActivity().getBaseContext(), SignInActivity.class);
-                //Forward extras if necessary
-                if (getActivity().getIntent().getExtras() != null) {
-                    signin.putExtras(getActivity().getIntent().getExtras());
-                    Logs.i("When starting signup extras where found !", this.getClass());
-                } else {
-                    Logs.i("When starting signup no extras found !", this.getClass());
-                }
-                startActivityForResult(signin, REQ_SIGNIN);
-/*
-                Logs.i("Submitting credentials to account manager !", this.getClass());
-                //If we are restoring an account then we get from user input the account name
-                if (checkFields()) {
-                    setUserFieldsFromInputs();
-                    password.setText("");
-                    myAccountGeneral.submitCredentials(getActivity());
-                }
-*/
+
+                SignInFragment fragment = SignInFragment.newInstance();
+//                fragment.setTargetFragment(SignInWithAccountsFragment.this, REQ_SIGNIN);
+                //Now replace the AuthenticatorFragment with the SignInWithAccountsFragment
+                replaceFragment(fragment,"test",true);  //This comes from abstract
             }
         });
 
@@ -102,17 +98,10 @@ public class SignInWithAccountsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Logs.i("Starting new activity to create account !", this.getClass());
-                // Since there can only be one AuthenticatorActivity, we call the sign up activity, get his results,
-                // and return them in setAccountAuthenticatorResult(). See finishLogin().
-                Intent signup = new Intent(getActivity().getBaseContext(), SignUpActivity.class);
-                //Forward extras if necessary
-                if (getActivity().getIntent().getExtras() != null) {
-                    signup.putExtras(getActivity().getIntent().getExtras());
-                    Logs.i("When starting signup extras where found !", this.getClass());
-                } else {
-                    Logs.i("When starting signup no extras found !", this.getClass());
-                }
-                startActivityForResult(signup, REQ_SIGNUP);
+                SignUpFragment fragment = SignUpFragment.newInstance();
+//                fragment.setTargetFragment(SignInWithAccountsFragment.this, REQ_SIGNUP);
+                //Now replace the AuthenticatorFragment with the SignInFragment
+                replaceFragment(fragment,"test",true);  //This comes from abstract
             }
         });
 
@@ -124,13 +113,12 @@ public class SignInWithAccountsFragment extends Fragment {
         Boolean fieldsOk = true;
         final EditText password = (EditText) mView.findViewById(R.id.fragment_signin_with_accounts_EditText_password);
 
-        if (!myAccountGeneral.checkPasswordInput(password.getText().toString(),mView,getActivity())) {
+        if (!myAccountGeneral.checkPasswordInput(password.getText().toString(),mView,mActivity)) {
             password.setText("");
             password.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
 
             fieldsOk = false;
         }
-
         return fieldsOk;
 
     }
@@ -139,50 +127,49 @@ public class SignInWithAccountsFragment extends Fragment {
     private void setUserFieldsFromInputs() {
         final EditText password           = (EditText) mView.findViewById(R.id.fragment_signin_with_accounts_EditText_password);
         user.setPassword(password.getText().toString());
-
-        user.print("Before running sign-in:");
     }
-
-
-
 
 
     //This is to inflate the Child fragment that contains the account details
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        Fragment childFragment;
-        childFragment = new AccountListFragment();
-
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container_account_display, childFragment).commit();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(AccountListFragment.FRAGMENT_INPUT_PARAM_USER, user.getName());
+        bundle.putSerializable(AccountListFragment.FRAGMENT_INPUT_PARAM_UPDATE_POSITIONS, mUpdatePositions);
+        Logs.i("Creating recycleView with: " + user.getName() + " and " + mUpdatePositions);
+        AccountListFragment childFragment = AccountListFragment.newInstance(bundle);
+        setContainer(R.id.fragment_container_account_display);
+        childFragment.setTargetFragment(SignInWithAccountsFragment.this, REQUEST_SELECTION);
+        setAddToBackStack(false);   //We don't want to add into the backstack
+        replaceFragment(childFragment,"test",false);
+        setContainer(R.id.fragment_container);
+        setAddToBackStack(true);
     }
 
 
     //When we come back from new account creation we fall here
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Logs.i("onActivityResult", this.getClass());
-        // The sign up activity returned that the user has successfully created an account
-        if (requestCode == REQ_SIGNUP && resultCode == Activity.RESULT_OK) {
-            getActivity().setResult(Activity.RESULT_OK, data);
-            getActivity().finish();
-        } else if (requestCode == REQ_SIGNIN && resultCode == Activity.RESULT_OK) {
-            getActivity().setResult(Activity.RESULT_OK, data);
-            getActivity().finish();
+        Logs.i("onActivityResult of SignInWithAccounts !");
+        if (requestCode == REQUEST_SELECTION && resultCode == Activity.RESULT_OK) {
+            //We get result from child fragment and update user.setName
+            User newUser = new User();
+            newUser.initEmpty(getContext());
+            newUser.setName((String) data.getSerializableExtra(AccountListFragment.FRAGMENT_OUTPUT_PARAM_SELECTED_USER));
+            user = newUser;
+        } else if (requestCode == REQUEST_SELECTION && resultCode == Activity.RESULT_CANCELED) {
+            mUpdatePositions = false;
         } else
             super.onActivityResult(requestCode, resultCode, data);
     }
 
-    //We need to restore the user with the same values we had in case we go to preferences...
+    //When rotation happens store the current user name and that we have rotated screen, so no updates on list order
     @Override
-    public void onStop() {
-        super.onStop();
-        Logs.i("We are on onStop of SignInWithAccounts !");
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Logs.i("Saved selected user : " + user.getName());
+        outState.putString(KEY_SAVED_USER,user.getName());
+        outState.putBoolean(KEY_UPDATE_POSITION,false);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Logs.i("We are in on resume ! of SignInWithAccounts");
-    }
 }

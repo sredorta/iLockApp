@@ -168,13 +168,16 @@ public class User extends JsonItem {
 //    mContext = context;
     //Try to restore an account from preferences
     this.setName(QueryPreferences.getPreference(context,QueryPreferences.PREFERENCE_ACCOUNT_NAME));
-
+    Logs.i("Now the current account is: " + this.getName());
     //If there is one account matching preferences in the device, we set all data from the device account
     if (myAccountGeneral.getAccount(this) != null) {
       this.getDataFromDeviceAccount(myAccountGeneral.getAccount(this));
-    } else
-       this.setName(null);
-    this.print("Values for User after init:");
+    } else {
+      //The account might have been removed so we pick the first account we find
+      this.getDataFromDeviceAccount(myAccountGeneral.getAccount());
+    }
+
+    Logs.i("Now the current account is: " + this.getName());
   }
 
   //Initializes the user account details with empty user
@@ -227,8 +230,6 @@ public class User extends JsonItem {
         mUserToken       = mAccountManager.peekAuthToken(myAccount,mUserAuthType);
         Logs.i("We restored the token:" + mUserToken);
     }
-
-    this.print("User values after populate:");
   }
 
 

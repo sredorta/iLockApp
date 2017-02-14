@@ -16,11 +16,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.locker.ilockapp.dao.JsonItem;
 import com.locker.ilockapp.dao.QueryPreferences;
 import com.locker.ilockapp.toolbox.Logs;
+import com.locker.ilockapp.toolbox.Toolbox;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -83,14 +85,21 @@ public class AccountGeneral {
         return null;
     }
 
+    //Gets the first account found wmattching accountType
+    public Account getAccount() {
+        //Find if there is an account with the correct accountName and get its token
+        for (Account account : mAccountManager.getAccountsByType(ACCOUNT_TYPE)) {
+                return account;
+        }
+        return null;
+    }
+
+
+
     //Returns all accounts of our type
     public Account[] getAccounts() {
-        for (Account account : mAccountManager.getAccountsByType(ACCOUNT_TYPE)) {
-            Logs.i("Found account : " + account.name);
-        }
         //Find if there is an account with the correct accountName and get its token
         return mAccountManager.getAccountsByType(ACCOUNT_TYPE);
-
     }
 
     //Returns count of accounts of our type
@@ -154,6 +163,8 @@ public class AccountGeneral {
                     Toast.makeText(activity.getBaseContext(), intent.getStringExtra(KEY_ERROR_MESSAGE), Toast.LENGTH_SHORT).show();
 
                 else {
+                    activity.getIntent().putExtras(intent.getExtras());
+                    Logs.i("We have the following intent we try to give to AuthenticatorActivity:");
                     //Save the account created in the preferences (all except critical things)
                     //Finish and send to AuthenticatorActivity that we where successfull
                     activity.setResult(Activity.RESULT_OK, intent);
@@ -165,9 +176,6 @@ public class AccountGeneral {
 
     //Submits credentials to the server and exits activity if successfull
     public void submitCredentials(final Activity activity,final View v, final User user) {
-
-        user.print("User details for submit:");
-
         new AsyncTask<Void, Void, Void>() {
             JsonItem item;
             @Override
@@ -194,9 +202,11 @@ public class AccountGeneral {
                     data.putString(AccountManager.KEY_ACCOUNT_NAME, user.getName());
                     data.putString(AccountManager.KEY_ACCOUNT_TYPE, user.getType());
                     data.putString(AccountManager.KEY_AUTHTOKEN, user.getToken());
-                    final Intent res = new Intent();
-                    res.putExtras(data);
-                    activity.setResult(Activity.RESULT_OK, res);
+ //                   final Intent res = new Intent();
+                    activity.getIntent().putExtras(data);
+                    Logs.i("We have the following intent we try to give to AuthenticatorActivity:");
+ //                   Toolbox.dumpIntent(res);
+                    activity.setResult(Activity.RESULT_OK);
                     activity.finish();
                 }
             }

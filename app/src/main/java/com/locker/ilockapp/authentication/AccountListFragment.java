@@ -4,10 +4,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -16,37 +14,44 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.locker.ilockapp.R;
 import com.locker.ilockapp.dao.QueryPreferences;
-import com.locker.ilockapp.toolbox.DividerItemDecoration;
+import com.locker.ilockapp.abstracts.FragmentAbstract;
 import com.locker.ilockapp.toolbox.Logs;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.locker.ilockapp.authentication.AccountGeneral.*;
 import static com.locker.ilockapp.authentication.User.*;
 /**
  * Created by sredorta on 1/24/2017.
  */
-public class AccountListFragment extends Fragment {
+public class AccountListFragment extends FragmentAbstract {
         private AccountListAdapter mAdapter;
         private RecyclerView mAccountsRecycleView;
         private List<Account> mAccounts = new ArrayList<>();
         AccountGeneral myAccountGeneral;
         User user;
-        public static User myUserSelected = new User();
-
+        private boolean mUpdatePostitions;
         private final int REQ_SIGNIN = 1;
+        public static final String FRAGMENT_INPUT_PARAM_USER = "current_user";    //String
+        public static final String FRAGMENT_INPUT_PARAM_UPDATE_POSITIONS = "update_positions";
+        public static final String FRAGMENT_OUTPUT_PARAM_SELECTED_USER = "selected_user";    //String
+
 
         // Constructor
         public static AccountListFragment newInstance() {
             return new AccountListFragment();
+        }
+
+        // Constructor with input arguments
+        public static AccountListFragment newInstance(Bundle data) {
+            AccountListFragment fragment = AccountListFragment.newInstance();
+            fragment.setArguments(data);
+            return fragment;
         }
 
         public AccountListAdapter getAdapter() {return mAdapter;}
@@ -56,8 +61,9 @@ public class AccountListFragment extends Fragment {
             super.onCreate(savedInstanceState);
             myAccountGeneral = new AccountGeneral(getContext());
             user = new User();
-            user.init(getContext());
-            myUserSelected = user;
+            user.initEmpty(getContext());
+            user.setName((String) getInputParam(AccountListFragment.FRAGMENT_INPUT_PARAM_USER));
+            mUpdatePostitions = (boolean) getInputParam(AccountListFragment.FRAGMENT_INPUT_PARAM_UPDATE_POSITIONS);
         }
 
 
@@ -66,32 +72,34 @@ public class AccountListFragment extends Fragment {
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             View v = inflater.inflate(R.layout.fragment_account_list, container, false);
             mAccountsRecycleView = (RecyclerView) v.findViewById(R.id.account_list_recycle_view);
-            mAccountsRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mAccountsRecycleView.setLayoutManager(new LinearLayoutManager(mActivity));
             //mAccountsRecycleView.addItemDecoration(new DividerItemDecoration(getActivity(), 1));
             updateUI();
             return v;
         }
+    //Updates the recycleview
         private void updateUI() {
             AccountManager mAccountManager;
-            mAccountManager = AccountManager.get(getActivity().getApplicationContext());
+            mAccountManager = AccountManager.get(mActivity.getApplicationContext());
             for (Account account : myAccountGeneral.getAccounts()) {
                 mAccounts.add(account);
             }
             //Do the swap to make sure that we start with last login as first element
-            Account myAccount;
-            if (user.getName() != null)
-                for (Account account : myAccountGeneral.getAccounts()) {
-                    if (user.getName().equals(mAccountManager.getUserData(account, PARAM_USER_ACCOUNT_NAME))) {
-                        int index = mAccounts.indexOf(account);
-                        if (index != 0) {
-                            myAccount = mAccounts.get(0);
-                            mAccounts.set(0, account);
-                            mAccounts.set(index, myAccount);
+            if (mUpdatePostitions) {
+                Account myAccount;
+                if (user.getName() != null)
+                    for (Account account : myAccountGeneral.getAccounts()) {
+                        if (user.getName().equals(mAccountManager.getUserData(account, PARAM_USER_ACCOUNT_NAME))) {
+                            int index = mAccounts.indexOf(account);
+                            if (index != 0) {
+                                myAccount = mAccounts.get(0);
+                                mAccounts.set(0, account);
+                                mAccounts.set(index, myAccount);
+                            }
+                            break;
                         }
-                        break;
                     }
-                }
-
+            }
             mAdapter = new AccountListAdapter(mAccounts);
             mAccountsRecycleView.setAdapter(mAdapter);
 
@@ -124,32 +132,35 @@ public class AccountListFragment extends Fragment {
             //We need to update the user with the account data that has been selected
             user.getDataFromDeviceAccount(mAccount);
             mAdapter.notifyDataSetChanged();
-            myUserSelected = user;
+            //Send result to master fragment
+            putOutputParam(FRAGMENT_OUTPUT_PARAM_SELECTED_USER, user.getName());
+            sendResult(Activity.RESULT_OK);
         }
 
         private void deleteItem() {
             mAccounts.remove(getAdapterPosition());
-            mAdapter.notifyItemRemoved(getAdapterPosition());
-            mAdapter.notifyItemRangeChanged(getAdapterPosition(), mAccounts.size());
-            //If there are no accounts left we start the sign-in activity
-            if (mAccounts.size() == 0) {
+            //After removing one account we select the upper on the list
+            if (mAccounts.size()>0) {
+
+                mAccount = mAccounts.get(0);
+                user.getDataFromDeviceAccount(mAccount);
+                Logs.i("We are here !!!!!!" + user.getName());
+                putOutputParam(FRAGMENT_OUTPUT_PARAM_SELECTED_USER,user.getName());
+                sendResult(Activity.RESULT_OK);
+                mAdapter.notifyDataSetChanged();
+            } else {
+                //If there are no accounts left we start the sign-in activity
+                //Change fragment as we have removed all accounts
                 Logs.i("Removed latest account:");
-                Intent signin = new Intent(getActivity().getBaseContext(), SignInActivity.class);
-                //Forward extras if necessary
-                if (getActivity().getIntent().getExtras() != null) {
-                    signin.putExtras(getActivity().getIntent().getExtras());
-                    Logs.i("When starting signup extras where found !", this.getClass());
-                } else {
-                    Logs.i("When starting signup no extras found !", this.getClass());
-                }
-                startActivityForResult(signin, REQ_SIGNIN);
-                //getActivity().finish();
+                SignInFragment fragment = SignInFragment.newInstance();
+                //Now replace the AuthenticatorFragment with the SignInFragment
+                replaceFragment(fragment,"test",true);  //This comes from abstract
             }
         }
 
         public void bindAccount(Account account, AccountListHolder holder ) {
             AccountManager mAccountManager;
-            mAccountManager = AccountManager.get(getActivity().getApplicationContext());
+            mAccountManager = AccountManager.get(mActivity.getApplicationContext());
 
             mAccountManager.getUserData(account, PARAM_USER_EMAIL);
             String fullName = mAccountManager.getUserData(account, PARAM_USER_FIRST_NAME);
@@ -159,7 +170,6 @@ public class AccountListFragment extends Fragment {
             mAccountNameTextView.setText(mAccountManager.getUserData(account, PARAM_USER_EMAIL));
             mAvatarImageView.setImageResource(R.drawable.user_default);
             //Define color for active or not active account (last log-in)
-            user.print("Before crash :");
             if (user.getName()!= null) {
                 if (user.getName().equals(mAccountManager.getUserData(account, PARAM_USER_ACCOUNT_NAME))) {
                     itemView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
@@ -184,7 +194,7 @@ public class AccountListFragment extends Fragment {
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
                                 case R.id.options_menu_account_item_edit:
-                                    Intent i = new Intent(getActivity().getBaseContext(), QueryPreferences.class);
+                                    Intent i = new Intent(mActivity.getBaseContext(), QueryPreferences.class);
                                     startActivity(i);
                                     //handle menu1 click
                                     break;
@@ -200,10 +210,7 @@ public class AccountListFragment extends Fragment {
                     popup.show();
                 }
             });
-
-
         }
-
     }
 
     private class AccountListAdapter extends RecyclerView.Adapter<AccountListHolder> {
@@ -214,7 +221,7 @@ public class AccountListFragment extends Fragment {
 
         @Override
         public AccountListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+            LayoutInflater layoutInflater = LayoutInflater.from(mActivity);
             View view = layoutInflater.inflate(R.layout.fragment_account_display, parent,false);
             return new AccountListHolder(view);
         }
@@ -235,13 +242,19 @@ public class AccountListFragment extends Fragment {
     //When we come back from new account creation we fall here
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Logs.i("onActivityResult", this.getClass());
         // The sign up activity returned that the user has successfully created an account
         if (requestCode == REQ_SIGNIN && resultCode == Activity.RESULT_OK) {
-            getActivity().setResult(Activity.RESULT_OK, data);
-            getActivity().finish();
+            mActivity.setResult(Activity.RESULT_OK, data);
+            mActivity.finish();
         } else
             super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mAccounts = new ArrayList<>();
+        updateUI();
     }
 
 

@@ -1,9 +1,10 @@
 package com.locker.ilockapp.authentication;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,16 +12,16 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.locker.ilockapp.R;
+import com.locker.ilockapp.abstracts.FragmentAbstract;
 import com.locker.ilockapp.toolbox.Logs;
 
 
 
 //Create new user account activity
-public class SignUpFragment extends Fragment {
+public class SignUpFragment extends FragmentAbstract {
     private AccountGeneral myAccountGeneral;
     private View mView;
     private User user;
-    private User myUserTmp;
     // Constructor
     public static SignUpFragment newInstance() {
         return new SignUpFragment();
@@ -50,7 +51,7 @@ public class SignUpFragment extends Fragment {
 
                 if (checkFields()) {
                     setUserFieldsFromInputs();
-                    myAccountGeneral.createServerAndDeviceAccount(getActivity(), user);
+                    myAccountGeneral.createServerAndDeviceAccount(mActivity, user);
                 }
             }
         });
@@ -75,7 +76,7 @@ public class SignUpFragment extends Fragment {
             lastName.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             fieldsOk = false;
         }
-        if (!myAccountGeneral.checkPasswordInput(password.getText().toString(),mView,getActivity())) {
+        if (!myAccountGeneral.checkPasswordInput(password.getText().toString(),mView,mActivity)) {
             fieldsOk = false;
             password.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             password.setText("");
@@ -114,5 +115,11 @@ public class SignUpFragment extends Fragment {
         user.print("Before running sign-up:");
     }
 
+    @Override
+    public void onBackPressed() {
+        Log.i("SERGI", "OnBackPressed was done, and we are now sending RESULT_CANCELED");
+        sendResult(Activity.RESULT_CANCELED);
+        //removeFragment(this, true);
+    }
 
 }

@@ -1,23 +1,29 @@
-package com.locker.ilockapp.activity;
+package com.locker.ilockapp.fragment_debug;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.os.Bundle;
 
 import com.locker.ilockapp.R;
+import com.locker.ilockapp.abstracts.OnBackPressed;
+
+public class LogInActivity extends AppCompatActivity implements OnBackPressed {
 
 
-/**
- * Created by sredorta on 9/19/2016.
- */
-public abstract class SingleFragmentActivity extends AppCompatActivity {
-    protected abstract Fragment createFragment();
     Fragment fragment;
+
+    public Fragment createFragment() {
+        //Send data to FragmentA
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(FragmentA.FRAGMENT_INPUT_PARAM_ARG1,"test");
+        bundle.putSerializable(FragmentA.FRAGMENT_INPUT_PARAM_ARG2, 10);
+        return FragmentA.newInstance(bundle);
+        //return FragmentA.newInstance();
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +66,15 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         super.finish();
     }
 
+
+    //Implement the onBackPressed on the fragments itself
     @Override
     public void onBackPressed() {
-        Log.i("SERGI", "OnBackPressed was done, and we are now sending RESULT_CANCELED");
-        setResult(RESULT_CANCELED);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_left);
-        transaction.remove(fragment);
-        transaction.commit();
-        super.finish();
+        Fragment currentFragment = getSupportFragmentManager().getFragments().get(getSupportFragmentManager().getBackStackEntryCount() - 1);
+        if (currentFragment instanceof OnBackPressed) {
+            ((OnBackPressed) currentFragment).onBackPressed();
+        }
+        super.onBackPressed();
     }
-
 }
+

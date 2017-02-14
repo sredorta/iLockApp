@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 
 import com.locker.ilockapp.authentication.AuthenticatorActivity;
+import com.locker.ilockapp.fragment_debug.LogInActivity;
 import com.locker.ilockapp.toolbox.Logs;
 
 public class MainActivity extends SingleFragmentActivity {
@@ -30,13 +31,14 @@ public class MainActivity extends SingleFragmentActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Logs.i("Back from authentication");
         if (requestCode == REQ_SIGNIN && resultCode == Activity.RESULT_OK) {
-            //String accountName = data.getStringExtra("authAccount");
-            //Logs.i("Account name is:" + accountName);
+//            String accountName = data.getStringExtra("authAccount");
+ //           Logs.i("Account name is:" + accountName);
             //final TextView myText = (TextView) findViewById(R.id.textView2);
             //myText.setText(accountName);
             // The sign up activity returned that the user has successfully created an account
             //Toast.makeText(this, "Valid credentials, we start the app !", Toast.LENGTH_LONG).show();
-        }
+        } else
+            Logs.i("Cancel was clicked, so not logged in...");
     }
 
 

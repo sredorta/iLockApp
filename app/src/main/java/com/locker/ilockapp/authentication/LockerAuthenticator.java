@@ -42,9 +42,6 @@ public class LockerAuthenticator extends AbstractAccountAuthenticator {
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         Logs.i("addAccount", this.getClass());
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
- /*       intent.putExtra(ARG_ACCOUNT_TYPE, accountType);
-        intent.putExtra(ARG_ACCOUNT_AUTH_TYPE, authTokenType);
-        */
         intent.putExtra(ARG_IS_ADDING_NEW_ACCOUNT, true);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
