@@ -172,11 +172,13 @@ public class AccountListFragment extends FragmentAbstract {
             //Define color for active or not active account (last log-in)
             if (user.getName()!= null) {
                 if (user.getName().equals(mAccountManager.getUserData(account, PARAM_USER_ACCOUNT_NAME))) {
-                    itemView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                    //itemView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_A700));
+                    itemView.setBackground(getResources().getDrawable(R.drawable.view_rounded_selected, null));
                     buttonViewOption.setEnabled(true);
                 } else {
                     buttonViewOption.setEnabled(false);
-                    itemView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+                    //itemView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_green_200));
+                    itemView.setBackground(getResources().getDrawable(R.drawable.view_rounded_unselected, null));
                 }
             }
 

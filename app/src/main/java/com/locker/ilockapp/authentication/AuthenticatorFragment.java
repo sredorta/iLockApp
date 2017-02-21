@@ -33,6 +33,7 @@ public class AuthenticatorFragment extends FragmentAbstract {
     private final int REQ_SIGNUP = 3;
     private Intent myIntent;
     private User user;
+    private boolean mIsCanceled;
     private boolean mIsDone = false;
     // Constructor
     public static AuthenticatorFragment newInstance() {
@@ -43,6 +44,7 @@ public class AuthenticatorFragment extends FragmentAbstract {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mIsCanceled = false;
         //This is a first fragment so we load the fragment in the container
         //replaceFragment(AuthenticatorFragment.this,"test",true);
         QueryPreferences.setDefaultValues(mActivity.getApplicationContext());
@@ -122,14 +124,16 @@ public class AuthenticatorFragment extends FragmentAbstract {
 
             @Override
             protected void onPostExecute(Bundle data) {
-                user.print("This is the user we are trying to log in:");
-                Logs.i("We are checking if Token is valid ! onPostExecute", AuthenticatorActivity.class);
-                if (data.getBoolean("isValidToken",false)) {
-                    mActivity.getIntent().putExtras(data);
-                    mActivity.setResult(Activity.RESULT_OK);
-                    mActivity.finish();
-                } else {
-                    startSignIn();
+                if (!mIsCanceled) {
+                    user.print("This is the user we are trying to log in:");
+                    Logs.i("We are checking if Token is valid ! onPostExecute", AuthenticatorActivity.class);
+                    if (data.getBoolean("isValidToken", false)) {
+                        mActivity.getIntent().putExtras(data);
+                        mActivity.setResult(Activity.RESULT_OK);
+                        mActivity.finish();
+                    } else {
+                        startSignIn();
+                    }
                 }
             }
         }.execute();
@@ -177,7 +181,12 @@ public class AuthenticatorFragment extends FragmentAbstract {
         } else
             super.onActivityResult(requestCode, resultCode, data);
     }
-
+    @Override
+    public void onBackPressed() {
+        mIsCanceled = true;
+        mActivity.setResult(Activity.RESULT_CANCELED);
+        mActivity.finish();
+    }
 
 
 }

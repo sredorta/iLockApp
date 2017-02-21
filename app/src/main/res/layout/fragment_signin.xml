@@ -16,7 +16,7 @@ android:padding="10dp"
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:id="@+id/fragment_login_logo"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
@@ -25,78 +25,71 @@ android:padding="10dp"
         android:src="@drawable/mylogo"
         android:adjustViewBounds="false"
         android:layout_gravity="top|center_horizontal"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:layout_margin="20dp" />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1">
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:background="@drawable/view_rounded"
+        android:gravity="center_vertical">
 
         <EditText
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:hint="email or phone"
             android:ems="10"
-            android:id="@+id/fragment_signin_EditText_account"
-            android:textColor="@color/colorWhite"
-            android:backgroundTint="@color/colorWhite"
-            android:layout_alignBaseline="@+id/button2"
-            android:layout_alignBottom="@+id/button2"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_weight="1" />
+            android:id="@+id/fragment_signin_EditText_account" />
 
         <EditText
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:hint="password"
             android:ems="10"
             android:id="@+id/fragment_signin_EditText_password"
-            android:textColor="@color/colorWhite"
-            android:backgroundTint="@color/colorWhite"
-            android:layout_alignBaseline="@+id/button2"
-            android:layout_alignBottom="@+id/button2"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_weight="1"
             android:password="true" />
 
         <Button
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:background="@drawable/button_login"
-            android:textColor="@color/md_green_100"
+            android:layout_height="wrap_content"
             android:text="CONNECT"
             android:id="@+id/fragment_signin_Button_connect"
-            android:layout_weight="1"
             android:alpha="0.8"
-            android:layout_margin="5dp" />
+            android:layout_margin="10dp"
+            android:layout_gravity="bottom" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:layout_gravity="center_vertical">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:text="OR"
-            android:id="@+id/textView"
-            android:textColor="@color/md_green_100"
-            android:layout_weight="1"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_vertical"
-            android:textStyle="italic" />
-
-        <Button
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:background="@drawable/button_login"
-            android:text="CREATE NEW ACCOUNT"
-            android:id="@+id/fragment_signin_Button_create"
-            android:textColor="@color/md_green_100"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Forgot password ?"
+            android:id="@+id/textView8"
             android:alpha="0.8"
-            android:layout_margin="5dp" />
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_margin="10dp" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Create new account"
+            android:id="@+id/fragment_signin_Button_create"
+            android:alpha="0.8"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_margin="10dp" />
+
     </LinearLayout>
 
 </LinearLayout>

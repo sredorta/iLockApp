@@ -35,10 +35,10 @@ public abstract class FragmentAbstract extends Fragment implements OnBackPressed
     private @IdRes int mContainer = R.id.fragment_container;
 
     //Animation for transitions
-    private @AnimRes int mAnimEnter     = R.anim.enter_from_left;
-    private @AnimRes int mAnimExit      = R.anim.exit_to_right;
-    private @AnimRes int mAnimPopEnter  = R.anim.enter_from_right;
-    private @AnimRes int mAnimPopExit   = R.anim.exit_to_left;
+    private @AnimRes int mAnimEnter     = R.anim.enter_from_right;
+    private @AnimRes int mAnimExit      = R.anim.exit_fade;
+    private @AnimRes int mAnimPopEnter  = R.anim.enter_from_left;
+    private @AnimRes int mAnimPopExit   = R.anim.exit_fade;
 
     //Define if addToBackStack is required
     private boolean mAddToBackStack = true;
@@ -74,7 +74,7 @@ public abstract class FragmentAbstract extends Fragment implements OnBackPressed
     }
 
     //We initialize the inputParams HashMap with empty Strings just in case
-    private void defineInputParams() {
+    public void defineInputParams() {
         Pattern p = Pattern.compile("^FRAGMENT_INPUT_PARAM.*");
         Matcher m;
 
@@ -94,7 +94,7 @@ public abstract class FragmentAbstract extends Fragment implements OnBackPressed
     }
 
     //We initialize the inputParams HashMap with empty Strings just in case
-    private void defineOutputParams() {
+    public void defineOutputParams() {
         Pattern p = Pattern.compile("^FRAGMENT_OUTPUT_PARAM.*");
         Matcher m;
 
@@ -146,7 +146,7 @@ public abstract class FragmentAbstract extends Fragment implements OnBackPressed
     }
 
     //Parsing of input arguments and setting inputParams
-    private void getInputArgs() {
+    public void getInputArgs() {
         if (getArguments() != null) {
             Set<String> keys = getArguments().keySet();
             for (String key : keys) {

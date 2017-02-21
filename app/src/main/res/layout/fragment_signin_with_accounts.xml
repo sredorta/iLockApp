@@ -15,7 +15,7 @@
 
         <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:id="@+id/fragment_login_logo"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
@@ -28,18 +28,21 @@
             android:layout_margin="20dp"
            />
 
+        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/fragment_container_account_display"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:paddingBottom="10dp">
+        </FrameLayout>
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1">
-            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/fragment_container_account_display"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="2">
-            </FrameLayout>
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:background="@drawable/view_rounded">
 
 
             <EditText
@@ -49,8 +52,6 @@
                 android:hint="password"
                 android:ems="10"
                 android:id="@+id/fragment_signin_with_accounts_EditText_password"
-                android:textColor="@color/colorWhite"
-                android:backgroundTint="@color/colorWhite"
                 android:layout_alignBaseline="@+id/button2"
                 android:layout_alignBottom="@+id/button2"
                 android:layout_alignParentLeft="true"
@@ -61,34 +62,45 @@
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:background="@drawable/button_login"
-                android:textColor="@color/md_green_100"
                 android:text="CONNECT"
                 android:id="@+id/fragment_signin_with_accounts_Button_connect"
                 android:layout_weight="1"
                 android:alpha="0.95"
                 android:layout_margin="10dp" />
 
-            <Button
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:gravity="center">
+
+            <TextView
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:background="@drawable/button_login"
-                android:text="CONNECT TO ANOTHER ACCOUNT"
+                android:layout_height="wrap_content"
+                android:text="Forgot password ?"
+                android:id="@+id/textView6"
+                android:gravity="center_vertical|center_horizontal"
+                android:allowUndo="false" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Connect to an existing account"
                 android:id="@+id/fragment_signin_with_accounts_Button_credentials"
-                android:textColor="@color/md_green_100"
-                android:layout_weight="1"
-                android:alpha="0.95"
-                android:layout_margin="10dp" />
-            <Button
+                android:layout_margin="10dp"
+                android:gravity="center_vertical|center_horizontal" />
+
+            <TextView
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:background="@drawable/button_login"
-                android:text="CREATE NEW ACCOUNT"
+                android:layout_height="wrap_content"
+                android:text="Create new account"
                 android:id="@+id/fragment_signin_with_accounts_Button_create"
-                android:textColor="@color/md_green_100"
-                android:layout_weight="1"
-                android:alpha="0.95"
-                android:layout_margin="10dp" />
+                android:gravity="center_vertical|center_horizontal"
+                android:allowUndo="false" />
+
         </LinearLayout>
 
     </LinearLayout>

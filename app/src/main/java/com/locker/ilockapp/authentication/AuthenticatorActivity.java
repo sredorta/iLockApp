@@ -65,8 +65,12 @@ public class AuthenticatorActivity extends AppCompatActivity implements OnBackPr
         }
         //We return to the main activity the response
         Intent i = new Intent();
-        i.putExtras(mResultBundle);
-        this.setResult(RESULT_OK, i);
+        if (mResultBundle != null) {
+            i.putExtras(mResultBundle);
+            this.setResult(RESULT_OK, i);
+        } else {
+            this.setResult(RESULT_CANCELED, i);
+        }
         super.finish();
      }
 
@@ -106,9 +110,10 @@ public class AuthenticatorActivity extends AppCompatActivity implements OnBackPr
     public void onBackPressed() {
         Logs.i("OnBackPressed: Current number of fragments : " + getSupportFragmentManager().getBackStackEntryCount());
         Fragment currentFragment = getSupportFragmentManager().getFragments().get(getSupportFragmentManager().getBackStackEntryCount() - 1);
-        if (currentFragment instanceof OnBackPressed) {
+        if (currentFragment != null)
+          if (currentFragment instanceof OnBackPressed) {
             ((OnBackPressed) currentFragment).onBackPressed();
-        }
+          }
         super.onBackPressed();
     }
 }

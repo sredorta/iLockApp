@@ -44,7 +44,7 @@
             android:name=".dao.QueryPreferences"
             android:theme="@style/LoginTheme" />
         <activity android:name=".fragment_debug.LogInActivity" />
-        <activity android:name=".activity.MainActivity"></activity>
+        <activity android:name=".activity.MainActivity" android:theme="@style/LoginTheme" ></activity>
     </application>
 
 </manifest>

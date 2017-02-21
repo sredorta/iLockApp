@@ -235,9 +235,6 @@ public class User extends JsonItem {
 
 
 
-
-
-
   public void setDataToDeviceAccount(Account account) {
       AccountManager mAccountManager = myAccountGeneral.getAccountManager();
 
