@@ -19,7 +19,7 @@ import com.locker.ilockapp.toolbox.Logs;
 
 //Create new user account activity
 public class SignUpFragment extends FragmentAbstract {
-    private AccountGeneral myAccountGeneral;
+ /*   private AccountGeneral myAccountGeneral;
     private View mView;
     private User user;
     // Constructor
@@ -113,6 +113,7 @@ public class SignUpFragment extends FragmentAbstract {
         //TODO avatar
 
     }
+    */
 /*
     @Override
     public void onBackPressed() {

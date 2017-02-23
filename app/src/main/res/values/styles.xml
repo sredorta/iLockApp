@@ -29,7 +29,7 @@
         <item name="android:windowBackground">@color/background_material_light</item>
 
         <!-- Text colors -->
-        <item name="android:textColorPrimary">@color/md_green_500</item>
+        <item name="android:textColorPrimary">@color/md_green_900</item>
         <item name="android:textColorPrimaryInverse">@color/md_green_50</item>
         <item name="android:textColorSecondary">@color/md_green_700</item>
         <item name="android:textColorSecondaryInverse">@color/md_green_200</item>

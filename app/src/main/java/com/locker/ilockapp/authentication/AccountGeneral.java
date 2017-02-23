@@ -15,10 +15,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.locker.ilockapp.R;
 import com.locker.ilockapp.dao.JsonItem;
 import com.locker.ilockapp.dao.QueryPreferences;
 import com.locker.ilockapp.toolbox.Logs;
@@ -242,6 +245,21 @@ public class AccountGeneral {
         return isDone;
     }
 
+    public boolean checkFirstNameInput(EditText myEditText, final View v) {
+        if (myEditText.getText().toString().equals("") || myEditText.length() < 3) {
+            myEditText.setHintTextColor(ContextCompat.getColor(v.getContext(), R.color.colorAccent));
+            Snackbar snackbar = Snackbar.make(v, "Please insert correct name", Snackbar.LENGTH_LONG);
+            snackbar.show();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkLastNameInput(EditText myEditText, final View v) {
+        return checkFirstNameInput(myEditText,v);
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Checker for inputs
@@ -281,9 +299,13 @@ public class AccountGeneral {
         if (count < 2) return false;
         return true;
     }
-    public boolean checkPasswordInput(String password, final View v, final Activity activity) {
-        boolean result = checkPasswordInput(password);
+
+
+    public boolean checkPasswordInput(EditText password, final View v, final Activity activity) {
+        boolean result = checkPasswordInput(password.getText().toString());
         if (!result) {
+            password.setText("");
+            password.setHintTextColor(ContextCompat.getColor(v.getContext(), R.color.colorAccent));
             Snackbar snackbar = Snackbar.make(v, "Invalid password", Snackbar.LENGTH_LONG).setAction("DETAILS", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -305,6 +327,24 @@ public class AccountGeneral {
                 }
             });
             snackbar.show();
+        } else {
+            password.setHintTextColor(ContextCompat.getColor(v.getContext(), R.color.colorPrimary));
+        }
+        return result;
+    }
+
+
+
+
+    //checks email input and acts on the EditText and shows snackBar if wrong
+    public boolean checkEmailInput(EditText email, final View v) {
+        boolean result = checkEmailInput(email.getText().toString());
+        if (!result) {
+            email.setHintTextColor(ContextCompat.getColor(v.getContext(), R.color.colorAccent));
+            Snackbar snackbar = Snackbar.make(v, "Invalid email format", Snackbar.LENGTH_LONG);
+            snackbar.show();
+        } else {
+            email.setHintTextColor(ContextCompat.getColor(v.getContext(), R.color.colorPrimary));
         }
         return result;
     }
@@ -339,6 +379,22 @@ public class AccountGeneral {
         return true;
     }
 
+
+
+
+    //checks email input and acts on the EditText and shows snackBar if wrong
+    public boolean checkPhoneInput(EditText phone, final View v) {
+        boolean result = checkPhoneInput(phone.getText().toString());
+        if (!result) {
+            phone.setHintTextColor(ContextCompat.getColor(v.getContext(), R.color.colorAccent));
+            Snackbar snackbar = Snackbar.make(v, "Invalid email format", Snackbar.LENGTH_LONG);
+            snackbar.show();
+        } else {
+            phone.setHintTextColor(ContextCompat.getColor(v.getContext(), R.color.colorPrimary));
+        }
+        return result;
+    }
+
     //Check that phone meets the required format
     //  8 numbers min
     //  only numbers
@@ -360,6 +416,8 @@ public class AccountGeneral {
 
         return true;
     }
+
+
     public boolean checkEmailOrPhoneInput(String email_or_phone) {
         if (this.checkEmailInput(email_or_phone) || this.checkPhoneInput(email_or_phone)) {
             return true;
@@ -368,6 +426,18 @@ public class AccountGeneral {
         }
     }
 
+    public boolean checkEmailOrPhoneInput(EditText email_or_phone,View v) {
+        if (this.checkEmailInput(email_or_phone.getText().toString()) || this.checkPhoneInput(email_or_phone.getText().toString())) {
+            email_or_phone.setHintTextColor(ContextCompat.getColor(v.getContext(), R.color.colorPrimary));
+            return true;
+        } else {
+            email_or_phone.setText("");
+            email_or_phone.setHintTextColor(ContextCompat.getColor(v.getContext(), R.color.colorAccent));
+            Snackbar snackbar = Snackbar.make(v, "Invalid email or phone format", Snackbar.LENGTH_LONG);
+            snackbar.show();
+            return false;
+        }
+    }
 
 
 }

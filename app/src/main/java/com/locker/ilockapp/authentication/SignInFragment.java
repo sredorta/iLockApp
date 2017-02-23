@@ -13,6 +13,7 @@ import android.widget.EditText;
 
 import com.locker.ilockapp.R;
 import com.locker.ilockapp.abstracts.FragmentAbstract;
+import com.locker.ilockapp.authentication.profile.create.ProfileCreateStartFragment;
 import com.locker.ilockapp.toolbox.Logs;
 
 /**
@@ -65,7 +66,7 @@ public class SignInFragment extends FragmentAbstract {
             public void onClick(View v) {
                 Logs.i("Starting new activity to create account !", this.getClass());
                 Logs.i("Found IS_ADDING :", this.getClass());
-                SignUpFragment fragment = SignUpFragment.newInstance();
+                ProfileCreateStartFragment fragment = ProfileCreateStartFragment.newInstance();
 //                fragment.setTargetFragment(SignInFragment.this, REQ_SIGNUP);
                 //Now replace the AuthenticatorFragment with the SignInFragment
                 replaceFragment(fragment,"test",true);  //This comes from abstract
@@ -82,16 +83,10 @@ public class SignInFragment extends FragmentAbstract {
         final EditText password = (EditText) mView.findViewById(R.id.fragment_signin_EditText_password);
         final EditText email_or_phone = (EditText) mView.findViewById(R.id.fragment_signin_EditText_account);
 
-        if (!myAccountGeneral.checkPasswordInput(password.getText().toString(),mView,mActivity)) {
-            password.setText("");
-            password.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+        if (!myAccountGeneral.checkPasswordInput(password,mView,mActivity)) {
             fieldsOk = false;
         }
-        if (!myAccountGeneral.checkEmailOrPhoneInput(email_or_phone.getText().toString())) {
-            email_or_phone.setText("");
-            email_or_phone.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-            Snackbar snackbar = Snackbar.make(mView, "Invalid phone or email", Snackbar.LENGTH_LONG);
-            snackbar.show();
+        if (!myAccountGeneral.checkEmailOrPhoneInput(email_or_phone,mView)) {
             fieldsOk = false;
         }
 

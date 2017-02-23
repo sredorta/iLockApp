@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.AnimRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -29,17 +30,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by sredorta on 2/10/2017.
+ * Created by sredorta on 2/23/2017.
  */
-public abstract class FragmentAbstract extends Fragment implements OnBackPressed {
+public class DialogAbstract extends DialogFragment implements OnBackPressed {
     //Container where the fragment needs to be expanded
-    private @IdRes int mContainer = R.id.fragment_container;
+    private @IdRes
+    int mContainer = R.id.fragment_container;
 
     //Animation for transitions
-    private @AnimRes int mAnimEnter     = R.anim.enter_from_right;
-    private @AnimRes int mAnimExit      = R.anim.exit_fade;
+    private @AnimRes
+    int mAnimEnter     = R.anim.enter_from_right;
+    private @AnimRes int mAnimExit      = R.anim.exit_to_right;
     private @AnimRes int mAnimPopEnter  = R.anim.enter_from_left;
-    private @AnimRes int mAnimPopExit   = R.anim.exit_fade;
+    private @AnimRes int mAnimPopExit   = R.anim.exit_to_right;
 
     //Define if addToBackStack is required
     private boolean mAddToBackStack = true;
@@ -86,6 +89,7 @@ public abstract class FragmentAbstract extends Fragment implements OnBackPressed
             if (m.matches()) {
                 try {
                     temp.put(field.get(field.getName()).toString(), null);
+                    Logs.i("Found input parameter : " + field.getName());
                 } catch (IllegalAccessException e) {
                     Logs.i("Caught exception: " + e);
                 }
@@ -203,7 +207,7 @@ public abstract class FragmentAbstract extends Fragment implements OnBackPressed
             transaction.setCustomAnimations(mAnimEnter, mAnimExit, mAnimPopEnter, mAnimPopExit);
         transaction.replace(mContainer, fragment);
         if (mAddToBackStack)
-              transaction.addToBackStack(tag);
+            transaction.addToBackStack(tag);
         transaction.commit();
     }
 
@@ -211,7 +215,7 @@ public abstract class FragmentAbstract extends Fragment implements OnBackPressed
     public void removeFragment(Fragment fragment, boolean animation) {
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         if (animation)
-             transaction.setCustomAnimations(mAnimEnter, mAnimExit, mAnimPopEnter, mAnimPopExit);
+            transaction.setCustomAnimations(mAnimEnter, mAnimExit, mAnimPopEnter, mAnimPopExit);
         transaction.remove(fragment);
         transaction.commit();
     }
@@ -231,20 +235,21 @@ public abstract class FragmentAbstract extends Fragment implements OnBackPressed
     public void onBackPressed() {
         Log.i("SERGI", "OnBackPressed was done, and we are now sending RESULT_CANCELED");
         sendResult(Activity.RESULT_CANCELED);
-      //  removeFragment(this, true);
+        //  removeFragment(this, true);
     }
 
     //Hide input keyboard
-   public void hideInputKeyBoard() {
-       // Check if no view has focus:
-       if (mActivity != null) {
-           View view = mActivity.getCurrentFocus();
-           if (view != null) {
-               InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-               imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-           }
-       }
-   }
+    public void hideInputKeyBoard() {
+        // Check if no view has focus:
+        if (mActivity != null) {
+            View view = mActivity.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
+    }
+
 
 
 

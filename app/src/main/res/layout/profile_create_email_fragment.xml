@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:baselineAligned="false"
+android:layout_margin="20dp"
+android:padding="20dp"
+android:background="@drawable/view_rounded">
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="Enter your email"
+    android:id="@+id/profile_create_email_title"
+    android:layout_gravity="center"
+    android:textStyle="bold" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:text="Please enter your personal or professional email"
+    android:id="@+id/profile_create_email_text"
+    android:layout_gravity="bottom|center_horizontal"
+    android:layout_marginTop="20dp"
+    android:layout_marginBottom="20dp"
+    android:gravity="center_horizontal" />
+
+<EditText
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:inputType="textPersonName"
+    android:ems="10"
+    android:id="@+id/profile_create_email_editText_email"
+    android:hint="email" />
+
+
+<Button
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="NEXT"
+    android:id="@+id/profile_create_email_button"
+    android:layout_gravity="center"
+    android:layout_marginTop="20dp"
+    android:layout_marginBottom="10dp" />
+
+</LinearLayout>

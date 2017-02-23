@@ -104,16 +104,27 @@ public class AuthenticatorActivity extends AppCompatActivity implements OnBackPr
         transaction.commit();
     }
 
+    //Remove a fragment
+    public void removeFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        if (animation)
+//            transaction.setCustomAnimations(mAnimEnter, mAnimExit, mAnimPopEnter, mAnimPopExit);
+        transaction.remove(fragment);
+        transaction.commit();
+    }
 
     //Implement the onBackPressed on the fragments itself
     @Override
     public void onBackPressed() {
         Logs.i("OnBackPressed: Current number of fragments : " + getSupportFragmentManager().getBackStackEntryCount());
         Fragment currentFragment = getSupportFragmentManager().getFragments().get(getSupportFragmentManager().getBackStackEntryCount() - 1);
-        if (currentFragment != null)
+        Logs.i("Current fragment is :" + currentFragment.getId());
+        if (currentFragment != null) {
           if (currentFragment instanceof OnBackPressed) {
             ((OnBackPressed) currentFragment).onBackPressed();
           }
+        }
+
         super.onBackPressed();
     }
 }

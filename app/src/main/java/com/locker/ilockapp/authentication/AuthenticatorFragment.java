@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.locker.ilockapp.R;
+import com.locker.ilockapp.authentication.profile.create.ProfileCreateStartFragment;
 import com.locker.ilockapp.dao.JsonItem;
 import com.locker.ilockapp.dao.QueryPreferences;
 import com.locker.ilockapp.abstracts.FragmentAbstract;
@@ -61,10 +62,10 @@ public class AuthenticatorFragment extends FragmentAbstract {
         View v = inflater.inflate(R.layout.fragment_wait, container, false);
         final ImageView myLogo = (ImageView) v.findViewById(R.id.fragment_wait_imageView);
         if (!mIsDone) {
-        ObjectAnimator fadeInOutAnimator = ObjectAnimator.ofFloat(this, "alpha", 1, 0, 1).setDuration(2000);
+        ObjectAnimator fadeInOutAnimator = ObjectAnimator.ofFloat(this, "alpha", 1, 0, 1).setDuration(500);
         fadeInOutAnimator.setRepeatCount(1);
         fadeInOutAnimator.setTarget(myLogo);
-        final ObjectAnimator fadeInOutInfiniteAnimator = ObjectAnimator.ofFloat(this, "alpha", 1, 0, 1).setDuration(2000);
+        final ObjectAnimator fadeInOutInfiniteAnimator = ObjectAnimator.ofFloat(this, "alpha", 1, 0, 1).setDuration(500);
         fadeInOutInfiniteAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         fadeInOutAnimator.addListener(new Animator.AnimatorListener() {
             @Override
@@ -160,7 +161,7 @@ public class AuthenticatorFragment extends FragmentAbstract {
     //Start signIn fragment for result
     private void startSignUp() {
         Logs.i("Found IS_ADDING :", this.getClass());
-        SignUpFragment fragment = SignUpFragment.newInstance();
+        ProfileCreateStartFragment fragment = ProfileCreateStartFragment.newInstance();
         fragment.setTargetFragment(AuthenticatorFragment.this, REQ_SIGNUP);
         //Now replace the AuthenticatorFragment with the SignInFragment
         replaceFragment(fragment,"test",true);  //This comes from abstract

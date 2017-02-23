@@ -13,6 +13,7 @@ import android.widget.EditText;
 
 import com.locker.ilockapp.R;
 import com.locker.ilockapp.abstracts.FragmentAbstract;
+import com.locker.ilockapp.authentication.profile.create.ProfileCreateStartFragment;
 import com.locker.ilockapp.toolbox.Logs;
 
 /**
@@ -91,7 +92,7 @@ public class SignInWithAccountsFragment extends FragmentAbstract {
         v.findViewById(R.id.fragment_signin_with_accounts_Button_create).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SignUpFragment fragment = SignUpFragment.newInstance();
+                ProfileCreateStartFragment fragment = ProfileCreateStartFragment.newInstance();
                 //Now replace the AuthenticatorFragment with the SignInFragment
                 replaceFragment(fragment,"test",true);  //This comes from abstract
             }
@@ -105,10 +106,7 @@ public class SignInWithAccountsFragment extends FragmentAbstract {
         Boolean fieldsOk = true;
         final EditText password = (EditText) mView.findViewById(R.id.fragment_signin_with_accounts_EditText_password);
 
-        if (!myAccountGeneral.checkPasswordInput(password.getText().toString(),mView,mActivity)) {
-            password.setText("");
-            password.setHintTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-
+        if (!myAccountGeneral.checkPasswordInput(password,mView,mActivity)) {
             fieldsOk = false;
         }
         return fieldsOk;

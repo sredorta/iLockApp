@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp"
+    android:background="@color/colorWhite"
+    android:id="@+id/internationalization_view_country_display">
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/internationalization_country_display_country_flag"
+        android:src="@drawable/ic_delete" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Country"
+        android:id="@+id/internationalization_country_display_country_name"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp" />
+</LinearLayout>
