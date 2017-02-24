@@ -25,7 +25,7 @@ import java.util.Locale;
  * Created by sredorta on 2/23/2017.
  */
 public class LanguagePickerFragment extends DialogAbstract {
-
+/*
     public static final String FRAGMENT_INPUT_PARAM_CURRENT_LANGUAGE = "user.current.language";    //Locale
     public static final String FRAGMENT_OUTPUT_PARAM_SELECTED_LANGUAGE = "user.selected.language"; //Locale
 
@@ -79,7 +79,7 @@ public class LanguagePickerFragment extends DialogAbstract {
 
     //Updates the recycleview
     private void updateUI() {
-        mLocales = Internationalization.getSupportedLanguageLocales(getContext());
+        mLocales = Internationalization.getSupportedLanguageLocales(getContext(), Locale.FRANCE);
         mAdapter = new LanguageListAdapter(mLocales);
         mLanguageRecycleView.setAdapter(mAdapter);
     }
@@ -109,7 +109,7 @@ public class LanguagePickerFragment extends DialogAbstract {
         public void bindItem(Locale locale, LanguageListHolder holder ) {
             mLocale = locale;
             mLanguageTextView.setText(locale.getDisplayLanguage());
-            mLanguageFlagImageView.setImageBitmap(Internationalization.getCountryFlagBitmapFromAsset(getContext(),locale));
+            mLanguageFlagImageView.setImageBitmap(Internationalization.getLanguageFlagBitmapFromAsset(getContext(),locale));
         }
     }
 
@@ -138,4 +138,5 @@ public class LanguagePickerFragment extends DialogAbstract {
         }
 
     }
+    */
 }

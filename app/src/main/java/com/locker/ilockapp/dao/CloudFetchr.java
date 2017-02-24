@@ -314,13 +314,14 @@ public class CloudFetchr {
     }
 
     //Checks if the user is registered and returns all details of the answer with full JsonItem
-    public JsonItem userSignUp(String phone, String email, String password, String firstName, String lastName, String type, String auth_type, String table) {
+    public JsonItem userSignUp(String phone, String email, String password, String firstName, String lastName, String avatar, String type, String auth_type, String table) {
         this.SEND_METHOD="POST";
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put("phone", phone);
         parameters.put("email", email);
         parameters.put("first_name", firstName);
         parameters.put("last_name", lastName);
+        parameters.put("avatar", avatar);
         parameters.put("password", password);
         parameters.put("account_type", type);
         parameters.put("account_access", auth_type);

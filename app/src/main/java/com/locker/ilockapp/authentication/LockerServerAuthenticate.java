@@ -36,6 +36,7 @@ public class LockerServerAuthenticate implements ServerAuthenticate {
                 user.getPassword(),
                 user.getFirstName(),
                 user.getLastName(),
+                user.getAvatar(),
                 user.getType(),
                 user.getAuthType(),
                 "users");

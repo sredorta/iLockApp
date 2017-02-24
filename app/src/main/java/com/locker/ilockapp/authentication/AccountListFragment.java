@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import com.locker.ilockapp.R;
 import com.locker.ilockapp.dao.QueryPreferences;
 import com.locker.ilockapp.abstracts.FragmentAbstract;
+import com.locker.ilockapp.toolbox.ImageItem;
 import com.locker.ilockapp.toolbox.Logs;
 
 import java.util.ArrayList;
@@ -168,7 +170,14 @@ public class AccountListFragment extends FragmentAbstract {
             mAccount = account;
             mUserFullNameTextView.setText(fullName);
             mAccountNameTextView.setText(mAccountManager.getUserData(account, PARAM_USER_EMAIL));
-            mAvatarImageView.setImageResource(R.drawable.user_default);
+            ImageItem imageItem = new ImageItem();
+            imageItem.setStream(mAccountManager.getUserData(account,PARAM_USER_AVATAR));
+            Bitmap bmp = imageItem.getBitmap();
+            if (bmp == null) {
+                mAvatarImageView.setImageResource(R.drawable.user_default);
+                Logs.i("Bitmap was null !!!!");
+            } else
+                mAvatarImageView.setImageBitmap(bmp);
             //Define color for active or not active account (last log-in)
             if (user.getName()!= null) {
                 if (user.getName().equals(mAccountManager.getUserData(account, PARAM_USER_ACCOUNT_NAME))) {

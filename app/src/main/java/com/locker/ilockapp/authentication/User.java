@@ -3,6 +3,7 @@ package com.locker.ilockapp.authentication;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,18 +11,20 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.locker.ilockapp.dao.JsonItem;
 import com.locker.ilockapp.dao.QueryPreferences;
+import com.locker.ilockapp.toolbox.ImageItem;
 import com.locker.ilockapp.toolbox.Logs;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by sredorta on 2/1/2017.
  */
-public class User extends JsonItem {
+public class User extends JsonItem implements Serializable {
   public final static String PARAM_USER_ACCOUNT_TYPE = "USER_ACCOUNT_TYPE";
   public final static String PARAM_USER_ACCOUNT_AUTH_TYPE = "USER_ACCOUNT_AUTH_TYPE";
   public final static String PARAM_USER_ACCOUNT_ID = "USER_ACCOUNT_ID";
@@ -233,7 +236,11 @@ public class User extends JsonItem {
     }
   }
 
-
+  public Bitmap getAvatarBitmap() {
+    ImageItem imageItem = new ImageItem();
+    imageItem.setStream(this.getAvatar());
+    return imageItem.getBitmap();
+  }
 
   public void setDataToDeviceAccount(Account account) {
       AccountManager mAccountManager = myAccountGeneral.getAccountManager();
@@ -248,6 +255,7 @@ public class User extends JsonItem {
       if (this.getPhone() != null)    mAccountManager.setUserData(account, PARAM_USER_PHONE, this.getPhone());
       if (this.getFirstName() != null)mAccountManager.setUserData(account, PARAM_USER_FIRST_NAME, this.getFirstName());
       if (this.getLastName() != null) mAccountManager.setUserData(account, PARAM_USER_LAST_NAME, this.getLastName());
+      if (this.getAvatar() != null)   mAccountManager.setUserData(account, PARAM_USER_AVATAR, this.getAvatar());
   }
 
   //Update from a user object all non-null variables
@@ -259,8 +267,6 @@ public class User extends JsonItem {
     if (data.getEmail() != null) this.setEmail(data.getEmail());
     if (data.getPhone() != null) this.setPhone(data.getPhone());
     if (data.getAvatar() != null) this.setAvatar(data.getAvatar());
-
-    //
     if (data.getPassword() != null) this.setPassword(data.getPassword());
     if (data.getToken() != null) this.setToken(data.getToken());
     if (data.getType() != null) this.setType(data.getType());
